@@ -158,20 +158,6 @@ func TestTable(t *testing.T) {
 	// from a different source, as the tests must read the replay files from the same source.
 	replayPath := newReplayAPIClient(t).ReplaysDirectory
 
-	backends := []struct {
-		name    string
-		Backend Backend
-	}{
-		{
-			name:    "mldev",
-			Backend: BackendGoogleAI,
-		},
-		{
-			name:    "vertex",
-			Backend: BackendVertexAI,
-		},
-	}
-
 	for _, backend := range backends {
 		t.Run(backend.name, func(t *testing.T) {
 			err := filepath.Walk(replayPath, func(testFilePath string, info os.FileInfo, err error) error {

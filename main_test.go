@@ -34,6 +34,7 @@ var (
 			"TestModelsGenerateContentStream/vertex/models/generate_content_part/test_video_gcs_file_uri",
 			"TestModelsGenerateContentStream/vertex/models/generate_content_tools/test_code_execution",
 			"TestModelsGenerateContentStream/mldev/models/generate_content_model",
+			"TestModelsGenerateContentAudio/mldev",
 		},
 		replayMode: []string{
 			"TestModelsGenerateContentStream/",
@@ -45,7 +46,20 @@ var (
 			"TestModelsGenerateContentStream/",
 		},
 	}
-	mode = flag.String("mode", replayMode, "Test mode")
+	mode     = flag.String("mode", replayMode, "Test mode")
+	backends = []struct {
+		name    string
+		Backend Backend
+	}{
+		{
+			name:    "mldev",
+			Backend: BackendGoogleAI,
+		},
+		{
+			name:    "vertex",
+			Backend: BackendVertexAI,
+		},
+	}
 )
 
 func isDisabledTest(t *testing.T) bool {

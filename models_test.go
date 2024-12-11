@@ -279,20 +279,6 @@ func TestModelsGenerateContent(t *testing.T) {
 // TODO (b/382689811): Use replays when replay supports streams.
 func TestModelsGenerateContentStream(t *testing.T) {
 	ctx := context.Background()
-
-	backends := []struct {
-		name    string
-		Backend Backend
-	}{
-		{
-			name:    "mldev",
-			Backend: BackendGoogleAI,
-		},
-		{
-			name:    "vertex",
-			Backend: BackendVertexAI,
-		},
-	}
 	replayPath := newReplayAPIClient(t).ReplaysDirectory
 
 	for _, backend := range backends {
@@ -355,6 +341,48 @@ func TestModelsGenerateContentStream(t *testing.T) {
 			})
 			if err != nil {
 				t.Error(err)
+			}
+		})
+	}
+}
+
+func TestModelsGenerateContentAudio(t *testing.T) {
+	if *mode != apiMode {
+		t.Skip("Skip. This test is only in the API mode")
+	}
+	ctx := context.Background()
+	for _, backend := range backends {
+		t.Run(backend.name, func(t *testing.T) {
+			t.Parallel()
+			if isDisabledTest(t) {
+				t.Skip("Skip: disabled test")
+			}
+			client, err := NewClient(ctx, &ClientConfig{Backend: backend.Backend})
+			if err != nil {
+				t.Fatal(err)
+			}
+			config := &GenerateContentConfig{
+				ResponseModalities: []string{"AUDIO"},
+				SpeechConfig: &SpeechConfig{
+					VoiceConfig: &VoiceConfig{
+						PrebuiltVoiceConfig: &PrebuiltVoiceConfig{
+							VoiceName: "Aoede",
+						},
+					},
+				},
+			}
+			result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", Text("say something nice to me"), config)
+			if err != nil {
+				t.Errorf("GenerateContent failed unexpectedly: %v", err)
+			}
+			if result == nil {
+				t.Fatalf("expected at least one response, got none")
+			}
+			if len(result.Candidates) == 0 {
+				t.Errorf("expected at least one candidate, got none")
+			}
+			if len(result.Candidates[0].Content.Parts) == 0 {
+				t.Errorf("expected at least one part, got none")
 			}
 		})
 	}

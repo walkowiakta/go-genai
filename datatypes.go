@@ -218,6 +218,20 @@ const (
 	FunctionCallingConfigModeNone FunctionCallingConfigMode = "NONE"
 )
 
+// The media resolution to use.
+type MediaResolution string
+
+const (
+	// Media resolution has not been set
+	MediaResolutionUnspecified MediaResolution = "MEDIA_RESOLUTION_UNSPECIFIED"
+	// Media resolution set to low (64 tokens).
+	MediaResolutionLow MediaResolution = "MEDIA_RESOLUTION_LOW"
+	// Media resolution set to medium (256 tokens).
+	MediaResolutionMedium MediaResolution = "MEDIA_RESOLUTION_MEDIUM"
+	// Media resolution set to high (zoomed reframing with 256 tokens).
+	MediaResolutionHigh MediaResolution = "MEDIA_RESOLUTION_HIGH"
+)
+
 // Enum representing the mask mode of a mask reference image.
 type MaskReferenceMode string
 
@@ -655,6 +669,8 @@ type GenerateContentConfig struct {
 	// The requested modalities of the response. Represents the set of
 	// modalities that the model can return.
 	ResponseModalities []string `json:"responseModalities,omitempty"`
+	// If specified, the media resolution specified will be used.
+	MediaResolution MediaResolution `json:"mediaResolution,omitempty"`
 	// The speech generation configuration.
 	SpeechConfig *SpeechConfig `json:"speechConfig,omitempty"`
 }

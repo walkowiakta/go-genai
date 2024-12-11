@@ -18,14 +18,14 @@ package main
 /*
 # For Vertex AI API
 export GOOGLE_GENAI_USE_VERTEXAI=true
-export GOOGLE_CLOUD_PROJECT=cloud-llm-preview1
-export GOOGLE_CLOUD_LOCATION=us-central1
+export GOOGLE_CLOUD_PROJECT={YOUR_PROJECT_ID}
+export GOOGLE_CLOUD_LOCATION={YOUR_LOCATION}
 
 # For Gemini AI API
 export GOOGLE_GENAI_USE_VERTEXAI=false
 export GOOGLE_API_KEY={YOUR_API_KEY}
 
-go run samples/generate_content_stream.go --model=gemini-1.5-flash
+go run samples/generate_text_stream.go --model=gemini-1.5-flash
 */
 
 import (
@@ -39,7 +39,7 @@ import (
 
 var model = flag.String("model", "gemini-1.5-pro-002", "the model name, e.g. gemini-1.5-pro-002")
 
-func generateContentStream(ctx context.Context) {
+func generateTextStream(ctx context.Context) {
 	client, err := genai.NewClient(ctx, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -63,5 +63,5 @@ func generateContentStream(ctx context.Context) {
 func main() {
 	ctx := context.Background()
 	flag.Parse()
-	generateContentStream(ctx)
+	generateTextStream(ctx)
 }
