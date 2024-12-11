@@ -1,3 +1,5 @@
+![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/googleapis/go-genai)
+
 # Google Gen AI Go SDK
 
 The Google Gen AI Go SDK enables developers to use Google's state-of-the-art
@@ -13,7 +15,7 @@ capabilities to generate text from text-and-image input.
 ```go
 result, err := client.Models.GenerateContent(ctx,
   "gemini-2.0-flash-exp",
-  genai.ContentParts{
+  genai.PartSlice{
     genai.Text("What's this image about?"),
     genai.InlineData{Data: imageBytes, MIMEType: "image/jpeg"},
   },

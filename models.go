@@ -927,6 +927,10 @@ func generateContentConfigToMldev(ac *apiClient, fromObject map[string]any, pare
 		setValueByPath(toObject, []string{"responseModalities"}, fromResponseModalities)
 	}
 
+	if getValueByPath(fromObject, []string{"mediaResolution"}) != nil {
+		return nil, fmt.Errorf("media_resolution parameter is not supported in Google AI")
+	}
+
 	fromSpeechConfig := getValueByPath(fromObject, []string{"speechConfig"})
 	if fromSpeechConfig != nil {
 		fromSpeechConfig, err = tSpeechConfig(ac, fromSpeechConfig)
@@ -1093,6 +1097,11 @@ func generateContentConfigToVertex(ac *apiClient, fromObject map[string]any, par
 	fromResponseModalities := getValueByPath(fromObject, []string{"responseModalities"})
 	if fromResponseModalities != nil {
 		setValueByPath(toObject, []string{"responseModalities"}, fromResponseModalities)
+	}
+
+	fromMediaResolution := getValueByPath(fromObject, []string{"mediaResolution"})
+	if fromMediaResolution != nil {
+		setValueByPath(toObject, []string{"mediaResolution"}, fromMediaResolution)
 	}
 
 	fromSpeechConfig := getValueByPath(fromObject, []string{"speechConfig"})

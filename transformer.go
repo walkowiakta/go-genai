@@ -92,18 +92,5 @@ func tSchema(_ *apiClient, origin any) (any, error) {
 }
 
 func tSpeechConfig(_ *apiClient, speechConfig any) (any, error) {
-	switch speechConfig.(type) {
-	case string:
-		return SpeechConfig{
-			VoiceConfig: &VoiceConfig{
-				PrebuiltVoiceConfig: &PrebuiltVoiceConfig{
-					VoiceName: speechConfig.(string),
-				},
-			},
-		}, nil
-	case SpeechConfig:
-		return speechConfig, nil
-	default:
-		return nil, fmt.Errorf("tSpeechConfig: speechConfig is not a string or SpeechConfig")
-	}
+	return speechConfig, nil
 }

@@ -18,14 +18,14 @@ package main
 /*
 # For Vertex AI API
 export GOOGLE_GENAI_USE_VERTEXAI=true
-export GOOGLE_CLOUD_PROJECT=cloud-llm-preview1
-export GOOGLE_CLOUD_LOCATION=us-central1
+export GOOGLE_CLOUD_PROJECT={YOUR_PROJECT_ID}
+export GOOGLE_CLOUD_LOCATION={YOUR_LOCATION}
 
 # For Gemini AI API
 export GOOGLE_GENAI_USE_VERTEXAI=false
 export GOOGLE_API_KEY={YOUR_API_KEY}
 
-go run samples/generate_content.go --model=gemini-1.5-pro-002
+go run samples/generate_audio.go --model=gemini-2.0-flash-exp
 */
 
 import (
@@ -38,9 +38,9 @@ import (
 	genai "google.golang.org/genai"
 )
 
-var model = flag.String("model", "gemini-1.5-pro-002", "the model name, e.g. gemini-1.5-pro-002")
+var model = flag.String("model", "gemini-2.0-flash-exp", "the model name, e.g. gemini-2.0-flash-exp")
 
-func generateContent(ctx context.Context) {
+func generateAudio(ctx context.Context) {
 	client, err := genai.NewClient(ctx, nil)
 	if err != nil {
 		log.Fatal(err)
@@ -50,10 +50,17 @@ func generateContent(ctx context.Context) {
 	} else {
 		fmt.Println("Calling GeminiAI.GenerateContent API...")
 	}
-	// No configs are being used in this sample, explicitly set it to nil for clarity.
-	var config *genai.GenerateContentConfig = nil
+	config := &genai.GenerateContentConfig{}
+	config.ResponseModalities = []string{"AUDIO"}
+	config.SpeechConfig = &genai.SpeechConfig{
+		VoiceConfig: &genai.VoiceConfig{
+			PrebuiltVoiceConfig: &genai.PrebuiltVoiceConfig{
+				VoiceName: "Aoede",
+			},
+		},
+	}
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx, *model, genai.Text("What is your name?"), config)
+	result, err := client.Models.GenerateContent(ctx, *model, genai.Text("say something nice to me"), config)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,5 +76,5 @@ func generateContent(ctx context.Context) {
 func main() {
 	ctx := context.Background()
 	flag.Parse()
-	generateContent(ctx)
+	generateAudio(ctx)
 }
