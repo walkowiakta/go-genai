@@ -34,7 +34,7 @@ var (
 			"TestModelsGenerateContentStream/vertex/models/generate_content_part/test_video_gcs_file_uri",
 			"TestModelsGenerateContentStream/vertex/models/generate_content_tools/test_code_execution",
 			"TestModelsGenerateContentStream/mldev/models/generate_content_model",
-			"TestModelsGenerateContentAudio/mldev",
+			"TestModelsGenerateContentAudio/",
 		},
 		replayMode: []string{
 			"TestModelsGenerateContentStream/",

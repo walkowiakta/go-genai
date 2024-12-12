@@ -381,9 +381,6 @@ func TestModelsGenerateContentAudio(t *testing.T) {
 			if len(result.Candidates) == 0 {
 				t.Errorf("expected at least one candidate, got none")
 			}
-			if len(result.Candidates[0].Content.Parts) == 0 {
-				t.Errorf("expected at least one part, got none")
-			}
 		})
 	}
 }

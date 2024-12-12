@@ -108,10 +108,10 @@ func (rac *replayAPIClient) LatestInteraction() *replayInteraction {
 func (rac *replayAPIClient) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	rac.t.Helper()
 	if rac.ReplayFile == nil {
-		rac.t.Error("no replay file loaded")
+		rac.t.Fatalf("no replay file loaded")
 	}
 	if rac.currentInteractionIndex >= len(rac.ReplayFile.Interactions) {
-		rac.t.Error("no more interactions in replay session")
+		rac.t.Fatalf("no more interactions in replay session")
 	}
 	interaction := rac.ReplayFile.Interactions[rac.currentInteractionIndex]
 
@@ -242,6 +242,17 @@ func (rac *replayAPIClient) assertRequest(sdkRequest *http.Request, want *replay
 		cmp.FilterPath(func(p cmp.Path) bool {
 			return p.String() != "Url"
 		}, cmp.Comparer(func(x, y string) bool {
+			// There are cases where the replay file does not contain the new lines or the extra spaces in
+			// the request while the actual request does. We remove the new lines and extra spaces to
+			// avoid false negatives and only compare the actual data.
+			newLineRegexp := regexp.MustCompile(`\r?\n`)
+			x = newLineRegexp.ReplaceAllString(x, "")
+			y = newLineRegexp.ReplaceAllString(y, "")
+			multiSpaceRegexp := regexp.MustCompile(`\s+`)
+			x = multiSpaceRegexp.ReplaceAllString(x, " ")
+			y = multiSpaceRegexp.ReplaceAllString(y, " ")
+			x = strings.TrimSpace(x)
+			y = strings.TrimSpace(y)
 			return strings.EqualFold(x, y)
 		})),
 	}
