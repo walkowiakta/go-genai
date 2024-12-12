@@ -999,8 +999,6 @@ type replayFile struct {
 
 // Used to override the default configuration.
 type UploadFileConfig struct {
-	// Used to override HTTP request options.
-	HTTPOptions map[string]any `json:"httpOptions,omitempty"`
 	// The name of the file in the destination (e.g., 'files/sample-image'. If not provided
 	// one will be generated.
 	Name string `json:"name,omitempty"`
@@ -1016,8 +1014,6 @@ type UploadFileConfig struct {
 // the `Imagen API reference documentation
 // <https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/imagen-api>`_.
 type UpscaleImageConfig struct {
-	// Used to override HTTP request options.
-	HTTPOptions map[string]any `json:"httpOptions,omitempty"`
 	// Whether to include a reason for filtered-out images in the
 	// response.
 	// If IncludeRAIReason is zero value, then no RAI reason will applied in the generation.
@@ -1192,7 +1188,7 @@ type LiveServerToolCall struct {
 // server turns.
 type LiveServerToolCallCancellation struct {
 	// The IDs of the tool calls to be cancelled.
-	IDs []int64 `json:"ids,omitempty"`
+	IDs []string `json:"ids,omitempty"`
 }
 
 // Response message for API call.
@@ -1338,7 +1334,7 @@ type LiveConnectConfig struct {
 	GenerationConfig *GenerationConfig `json:"generationConfig,omitempty"`
 	// The requested modalities of the response. Represents the set of
 	// modalities that the model can return. Defaults to AUDIO if not specified.
-	ResponseModalities []string `json:"responseModalities,omitempty"`
+	ResponseModalities []Modality `json:"responseModalities,omitempty"`
 	// The speech generation configuration.
 	SpeechConfig *SpeechConfig `json:"speechConfig,omitempty"`
 	// The user provided system instructions for the model.
