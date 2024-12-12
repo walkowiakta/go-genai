@@ -128,7 +128,7 @@ func NewClient(ctx context.Context, cc *ClientConfig) (*Client, error) {
 		}
 	}
 
-	if cc.Credentials == nil {
+	if cc.Backend == BackendVertexAI && cc.Credentials == nil {
 		cred, err := google.FindDefaultCredentials(ctx, "https://www.googleapis.com/auth/cloud-platform")
 		if err != nil {
 			return nil, fmt.Errorf("failed to find default credentials: %w", err)
