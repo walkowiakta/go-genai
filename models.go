@@ -26,6 +26,11 @@ func partToMldev(ac *apiClient, fromObject map[string]any, parentObject map[stri
 		return nil, fmt.Errorf("video_metadata parameter is not supported in Google AI")
 	}
 
+	fromThought := getValueByPath(fromObject, []string{"thought"})
+	if fromThought != nil {
+		setValueByPath(toObject, []string{"thought"}, fromThought)
+	}
+
 	fromCodeExecutionResult := getValueByPath(fromObject, []string{"codeExecutionResult"})
 	if fromCodeExecutionResult != nil {
 		setValueByPath(toObject, []string{"codeExecutionResult"}, fromCodeExecutionResult)
@@ -70,6 +75,10 @@ func partToVertex(ac *apiClient, fromObject map[string]any, parentObject map[str
 	fromVideoMetadata := getValueByPath(fromObject, []string{"videoMetadata"})
 	if fromVideoMetadata != nil {
 		setValueByPath(toObject, []string{"videoMetadata"}, fromVideoMetadata)
+	}
+
+	if getValueByPath(fromObject, []string{"thought"}) != nil {
+		return nil, fmt.Errorf("thought parameter is not supported in Vertex AI")
 	}
 
 	fromCodeExecutionResult := getValueByPath(fromObject, []string{"codeExecutionResult"})
@@ -1206,6 +1215,11 @@ func generateContentParametersToVertex(ac *apiClient, fromObject map[string]any,
 
 func partFromMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
+
+	fromThought := getValueByPath(fromObject, []string{"thought"})
+	if fromThought != nil {
+		setValueByPath(toObject, []string{"thought"}, fromThought)
+	}
 
 	fromCodeExecutionResult := getValueByPath(fromObject, []string{"codeExecutionResult"})
 	if fromCodeExecutionResult != nil {
