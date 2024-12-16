@@ -42,7 +42,7 @@ const apiKey = "your-api-key"
 const modelName = "some-model"
 
 // This example shows how to create a new client for Vertex AI.
-func ExampleClient_NewClient_vertexai() {
+func ExampleNewClient_vertexai() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		Project:  project,
@@ -56,7 +56,7 @@ func ExampleClient_NewClient_vertexai() {
 }
 
 // This example shows how to create a new client for Gemini API.
-func ExampleClient_NewClient_geminiapi() {
+func ExampleNewClient_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
@@ -81,11 +81,7 @@ func ExampleModels_GenerateContent_text_vertexai() {
 	}
 
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-2.0-flash-exp",
-		genai.Text("Tell me about New York?"),
-		nil,
-	)
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", genai.Text("Tell me about New York?"), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -104,11 +100,7 @@ func ExampleModels_GenerateContent_text_geminiapi() {
 	}
 
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-2.0-flash-exp",
-		genai.Text("Tell me about New York?"),
-		nil,
-	)
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", genai.Text("Tell me about New York?"), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -127,12 +119,14 @@ func ExampleModels_GenerateContent_texts_vertexai() {
 		log.Fatal(err)
 	}
 
+	parts := []*genai.Part{
+		{Text: "Tell me about New York?"},
+		{Text: "And how about San Francison?"},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-2.0-flash-exp",
-		genai.Texts{"Tell me about New York?", "And how about San Francison?"},
-		nil,
-	)
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -150,12 +144,14 @@ func ExampleModels_GenerateContent_texts_geminiapi() {
 		log.Fatal(err)
 	}
 
+	parts := []*genai.Part{
+		{Text: "Tell me about New York?"},
+		{Text: "And how about San Francison?"},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-2.0-flash-exp",
-		genai.Texts{"Tell me about New York?", "And how about San Francison?"},
-		nil,
-	)
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -183,15 +179,14 @@ func ExampleModels_GenerateContent_inlineImage_vertexai() {
 	defer resp.Body.Close()
 	data, err := io.ReadAll(resp.Body)
 
+	parts := []*genai.Part{
+		{Text: "What's this image about?"},
+		{InlineData: &genai.Blob{Data: data, MIMEType: "image/jpeg"}},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-2.0-flash-exp",
-		genai.PartSlice{
-			genai.Text("What's this image about?"),
-			genai.InlineData{Data: data, MIMEType: "image/jpeg"},
-		},
-		nil,
-	)
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -218,15 +213,14 @@ func ExampleModels_GenerateContent_inlineImage_geminiapi() {
 	defer resp.Body.Close()
 	data, err := io.ReadAll(resp.Body)
 
+	parts := []*genai.Part{
+		{Text: "What's this image about?"},
+		{InlineData: &genai.Blob{Data: data, MIMEType: "image/jpeg"}},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-2.0-flash-exp",
-		genai.PartSlice{
-			genai.Text("What's this image about?"),
-			genai.InlineData{Data: data, MIMEType: "image/jpeg"},
-		},
-		nil,
-	)
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -254,15 +248,14 @@ func ExampleModels_GenerateContent_inlinePDF_vertexai() {
 	defer resp.Body.Close()
 	data, err := io.ReadAll(resp.Body)
 
+	parts := []*genai.Part{
+		{Text: "What's this pdf about?"},
+		{InlineData: &genai.Blob{Data: data, MIMEType: "application/pdf"}},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-2.0-flash-exp",
-		genai.PartSlice{
-			genai.Text("What's this pdf about?"),
-			genai.InlineData{Data: data, MIMEType: "application/pdf"},
-		},
-		nil,
-	)
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -289,15 +282,14 @@ func ExampleModels_GenerateContent_inlinePDF_geminiapi() {
 	defer resp.Body.Close()
 	data, err := io.ReadAll(resp.Body)
 
+	parts := []*genai.Part{
+		{Text: "What's this pdf about?"},
+		{InlineData: &genai.Blob{Data: data, MIMEType: "application/pdf"}},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-2.0-flash-exp",
-		genai.PartSlice{
-			genai.Text("What's this pdf about?"),
-			genai.InlineData{Data: data, MIMEType: "application/pdf"},
-		},
-		nil,
-	)
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -325,14 +317,14 @@ func ExampleModels_GenerateContent_inlineAudio_vertexai() {
 	defer resp.Body.Close()
 	data, err := io.ReadAll(resp.Body)
 
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-1.5-pro",
-		genai.PartSlice{
-			genai.Text("What's this music about?"),
-			genai.InlineData{Data: data, MIMEType: "audio/mp3"},
-		},
-		nil,
-	)
+	parts := []*genai.Part{
+		{Text: "What's this music about?"},
+		{InlineData: &genai.Blob{Data: data, MIMEType: "audio/mp3"}},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
+	// Call the GenerateContent method.
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -358,14 +350,14 @@ func ExampleModels_GenerateContent_inlineAudio_geminiapi() {
 	defer resp.Body.Close()
 	data, err := io.ReadAll(resp.Body)
 
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-1.5-pro",
-		genai.PartSlice{
-			genai.Text("What's this music about?"),
-			genai.InlineData{Data: data, MIMEType: "audio/mp3"},
-		},
-		nil,
-	)
+	parts := []*genai.Part{
+		{Text: "What's this music about?"},
+		{InlineData: &genai.Blob{Data: data, MIMEType: "audio/mp3"}},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
+	// Call the GenerateContent method.
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -393,14 +385,13 @@ func ExampleModels_GenerateContent_inlineVideo_vertexai() {
 	defer resp.Body.Close()
 	data, err := io.ReadAll(resp.Body)
 
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-1.5-pro",
-		genai.PartSlice{
-			genai.Text("What's this video about?"),
-			genai.InlineData{Data: data, MIMEType: "video/mp4"},
-		},
-		nil,
-	)
+	parts := []*genai.Part{
+		{Text: "What's this video about?"},
+		{InlineData: &genai.Blob{Data: data, MIMEType: "video/mp4"}},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -427,14 +418,13 @@ func ExampleModels_GenerateContent_inlineVideo_geminiapi() {
 	defer resp.Body.Close()
 	data, err := io.ReadAll(resp.Body)
 
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-1.5-pro",
-		genai.PartSlice{
-			genai.Text("What's this video about?"),
-			genai.InlineData{Data: data, MIMEType: "video/mp4"},
-		},
-		nil,
-	)
+	parts := []*genai.Part{
+		{Text: "What's this video about?"},
+		{InlineData: &genai.Blob{Data: data, MIMEType: "video/mp4"}},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -454,14 +444,13 @@ func ExampleModels_GenerateContent_gcsURI_vertexai() {
 	}
 
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-1.5-pro",
-		genai.PartSlice{
-			genai.Text("What's this video about?"),
-			genai.FileData{FileURI: "gs://cloud-samples-data/video/animals.mp4", MIMEType: "video/mp4"},
-		},
-		nil,
-	)
+	parts := []*genai.Part{
+		{Text: "What's this video about?"},
+		{FileData: &genai.FileData{FileURI: "gs://cloud-samples-data/video/animals.mp4", MIMEType: "video/mp4"}},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -480,14 +469,13 @@ func ExampleModels_GenerateContent_httpURL_vertexai() {
 	}
 
 	// Call the GenerateContent method.
-	result, err := client.Models.GenerateContent(ctx,
-		"gemini-1.5-pro",
-		genai.PartSlice{
-			genai.Text("What's this picture about?"),
-			genai.FileData{FileURI: "https://storage.googleapis.com/cloud-samples-data/generative-ai/image/scones.jpg", MIMEType: "image/jpeg"},
-		},
-		nil,
-	)
+	parts := []*genai.Part{
+		{Text: "What's this picture about?"},
+		{FileData: &genai.FileData{FileURI: "https://storage.googleapis.com/cloud-samples-data/generative-ai/image/scones.jpg", MIMEType: "image/jpeg"}},
+	}
+	contents := []*genai.Content{{Parts: parts}}
+
+	result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", contents, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -507,9 +495,12 @@ func ExampleModels_GenerateContent_googleSearchRetrieval_vertexai() {
 	}
 
 	// Call the GenerateContent method.
+	parts := []*genai.Part{{Text: "Tell me about New York?"}}
+	contents := []*genai.Content{{Parts: parts}}
+
 	result, err := client.Models.GenerateContent(ctx,
 		"gemini-2.0-flash-exp",
-		genai.Text("Tell me about New York?"),
+		contents,
 		&genai.GenerateContentConfig{
 			Tools: []*genai.Tool{
 				{GoogleSearchRetrieval: &genai.GoogleSearchRetrieval{}},
@@ -626,7 +617,7 @@ func ExampleModels_GenerateContent_config_vertexai() {
 			TopK:             genai.Ptr(2.0),
 			ResponseMIMEType: "application/json",
 			StopSequences:    []string{"\n"},
-			CandidateCount:   genai.Ptr[int64](2),
+			CandidateCount:   2,
 			Seed:             genai.Ptr[int64](42),
 			MaxOutputTokens:  genai.Ptr[int64](128),
 			PresencePenalty:  genai.Ptr(0.5),
@@ -660,7 +651,7 @@ func ExampleModels_GenerateContent_config_geminiapi() {
 			TopK:             genai.Ptr(2.0),
 			ResponseMIMEType: "application/json",
 			StopSequences:    []string{"\n"},
-			CandidateCount:   genai.Ptr(int64(2)),
+			CandidateCount:   2,
 			Seed:             genai.Ptr(int64(42)),
 			MaxOutputTokens:  genai.Ptr(int64(128)),
 			PresencePenalty:  genai.Ptr(0.5),
@@ -690,7 +681,7 @@ func ExampleModels_GenerateContent_systemInstruction_vertexai() {
 		"gemini-2.0-flash-exp",
 		genai.Text("Tell me about New York?"),
 		&genai.GenerateContentConfig{
-			SystemInstruction: genai.Text("You are a helpful assistant.").ToContent(),
+			SystemInstruction: &genai.Content{Parts: []*genai.Part{{Text: "You are a helpful assistant."}}},
 		},
 	)
 	if err != nil {
@@ -715,7 +706,7 @@ func ExampleModels_GenerateContent_systemInstruction_geminiapi() {
 		"gemini-2.0-flash-exp",
 		genai.Text("Tell me about New York?"),
 		&genai.GenerateContentConfig{
-			SystemInstruction: genai.Text("You are a helpful assistant.").ToContent(),
+			SystemInstruction: &genai.Content{Parts: []*genai.Part{{Text: "You are a helpful assistant."}}},
 		},
 	)
 	if err != nil {

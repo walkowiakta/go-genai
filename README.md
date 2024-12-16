@@ -1,4 +1,5 @@
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/googleapis/go-genai)
+[![Go Reference](https://pkg.go.dev/badge/google.golang.org/genai.svg)](https://pkg.go.dev/google.golang.org/genai)
 
 # Google Gen AI Go SDK
 
