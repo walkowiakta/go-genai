@@ -203,6 +203,10 @@ func (rac *replayAPIClient) assertRequest(sdkRequest *http.Request, want *replay
 		Headers:      headers,
 		BodySegments: []map[string]any{bodySegment},
 	}
+	// TODO(b/383753309): Maybe it's better to adjust the expected replayRequest when reading from the
+	// replay file, instead of doing the adjustment logic in comparator.
+	// Because when comparator returns false, the diff message still shows the content before
+	// the adjustment.
 	opts := cmp.Options{
 		// Verifying that one url is the suffix of the other is enough for this validation.
 		cmpOptionByPath(replayRequest{}, "Url", cmp.Comparer(func(x, y string) bool {
@@ -237,6 +241,16 @@ func (rac *replayAPIClient) assertRequest(sdkRequest *http.Request, want *replay
 			xStr := strings.ReplaceAll(x.(string), "{PROJECT_AND_LOCATION_PATH}", "")
 			yStr := strings.ReplaceAll(y.(string), "{PROJECT_AND_LOCATION_PATH}", "")
 			return strings.HasSuffix(xStr, yStr) || strings.HasSuffix(yStr, xStr)
+		})),
+		// Verifying generationConfig with default values logic.
+		cmpOptionByPath(replayRequest{}, "BodySegments.generationConfig", cmp.Comparer(func(x, y any) bool {
+			xStruct := &GenerateContentConfig{}
+			yStruct := &GenerateContentConfig{}
+			mapToStruct(x.(map[string]any), xStruct)
+			mapToStruct(y.(map[string]any), yStruct)
+			xStruct.setDefaults()
+			yStruct.setDefaults()
+			return reflect.DeepEqual(xStruct, yStruct)
 		})),
 		// Handles the lowercase/uppercase differences in the data, e.g. 'Method: "POST" vs "post"'.
 		cmp.FilterPath(func(p cmp.Path) bool {

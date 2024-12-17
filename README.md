@@ -1,4 +1,5 @@
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/googleapis/go-genai)
+[![Go Reference](https://pkg.go.dev/badge/google.golang.org/genai.svg)](https://pkg.go.dev/google.golang.org/genai)
 
 # Google Gen AI Go SDK
 
@@ -13,14 +14,11 @@ For example, with just a few lines of code, you can access Gemini's multimodal
 capabilities to generate text from text-and-image input.
 
 ```go
-result, err := client.Models.GenerateContent(ctx,
-  "gemini-2.0-flash-exp",
-  genai.PartSlice{
-    genai.Text("What's this image about?"),
-    genai.InlineData{Data: imageBytes, MIMEType: "image/jpeg"},
-  },
-  nil,
-)
+parts := []*genai.Part{
+  {Text: "What's this image about?"},
+  {InlineData: &genai.Blob{Data: imageBytes, MIMEType: "image/jpeg"}},
+}
+result, err := client.Models.GenerateContent(ctx, "gemini-2.0-flash-exp", []*genai.Content{{Parts: parts}}, nil)
 ```
 
 ## Installation and usage
@@ -31,7 +29,7 @@ Add the SDK to your module with `go get google.golang.org/genai`.
 
 ### Imports
 ```go
-import genai "google.golang.org/genai"
+import "google.golang.org/genai"
 ```
 
 ### Gemini API Client:

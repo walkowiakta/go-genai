@@ -34,7 +34,7 @@ import (
 	"fmt"
 	"log"
 
-	genai "google.golang.org/genai"
+	"google.golang.org/genai"
 )
 
 var model = flag.String("model", "gemini-1.5-pro-002", "the model name, e.g. gemini-1.5-pro-002")

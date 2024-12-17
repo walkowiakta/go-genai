@@ -132,7 +132,7 @@ type xpTestParams struct {
 	platform string
 	model    string
 	client   *Client
-	contents Contents
+	contents []*Content
 	config   *GenerateContentConfig
 
 	stream bool
@@ -170,7 +170,7 @@ func baseGenerateContentTest(ctx context.Context, t *testing.T, x xpTestParams) 
 }
 
 // Cross platform(XP) Vertex GenerateContent test
-func xpVertexGenerateContentTest(ctx context.Context, t *testing.T, contents Contents, config *GenerateContentConfig) {
+func xpVertexGenerateContentTest(ctx context.Context, t *testing.T, contents []*Content, config *GenerateContentConfig) {
 	t.Helper()
 
 	baseGenerateContentTest(ctx, t, xpTestParams{
@@ -181,7 +181,7 @@ func xpVertexGenerateContentTest(ctx context.Context, t *testing.T, contents Con
 	})
 }
 
-func xpMLDevGenerateContentTest(ctx context.Context, t *testing.T, contents Contents) {
+func xpMLDevGenerateContentTest(ctx context.Context, t *testing.T, contents []*Content) {
 	t.Helper()
 
 	baseGenerateContentTest(ctx, t, xpTestParams{
@@ -192,7 +192,7 @@ func xpMLDevGenerateContentTest(ctx context.Context, t *testing.T, contents Cont
 }
 
 // Cross platform(XP) GenerateContent test
-func xpGenerateContentTest(ctx context.Context, t *testing.T, contents Contents, config *GenerateContentConfig) {
+func xpGenerateContentTest(ctx context.Context, t *testing.T, contents []*Content, config *GenerateContentConfig) {
 	t.Helper()
 
 	baseGenerateContentTest(ctx, t, xpTestParams{
@@ -209,7 +209,7 @@ func xpGenerateContentTest(ctx context.Context, t *testing.T, contents Contents,
 	})
 }
 
-func xpGenerateContent20Test(ctx context.Context, t *testing.T, contents Contents, config *GenerateContentConfig, stream bool) {
+func xpGenerateContent20Test(ctx context.Context, t *testing.T, contents []*Content, config *GenerateContentConfig, stream bool) {
 	t.Helper()
 	baseGenerateContentTest(ctx, t, xpTestParams{
 		platform: "VertexAI",
@@ -227,7 +227,6 @@ func TestModelsGenerateContent(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("WithImageBytes", func(t *testing.T) {
-		t.Log("WithImageBytes", *mode)
 		// Read image file
 		imageFile, err := os.Open("testdata/google.jpg")
 		if err != nil {
@@ -241,38 +240,14 @@ func TestModelsGenerateContent(t *testing.T) {
 		}
 
 		// Expected Request & Response
-		contents := PartSlice{
-			Text("What's in this picture"),
-			InlineData{Data: imageBytes, MIMEType: "image/png"},
+		contents := []*Content{
+			{Parts: []*Part{
+				{Text: "What's in this picture"},
+				{InlineData: &Blob{Data: imageBytes, MIMEType: "image/png"}},
+			}},
 		}
 
 		xpGenerateContentTest(ctx, t, contents, nil)
-	})
-
-	t.Run("WithUnionText", func(t *testing.T) {
-		xpGenerateContentTest(ctx, t, Text("What's in this picture"), nil)
-	})
-
-	t.Run("WithUnionTexts", func(t *testing.T) {
-		xpGenerateContentTest(ctx, t, Texts{"What's in this picture", "What's your name?"}, nil)
-	})
-
-	t.Run("WithUnionParts", func(t *testing.T) {
-		xpVertexGenerateContentTest(ctx, t, PartSlice{
-			Text("What is your name?"),
-			Text("What's in the picture?"),
-			FileData{FileURI: "https://storage.googleapis.com/cloud-samples-data/generative-ai/image/scones.jpg", MIMEType: "image/jpeg"},
-			Part{Text: "What is your favorite color?"},
-		}, nil)
-	})
-
-	t.Run("WithUnionContents", func(t *testing.T) {
-		xpVertexGenerateContentTest(ctx, t, ContentSlice{{Parts: []*Part{{Text: "You are a chatbot"}}, Role: "user"},
-			{Parts: []*Part{{Text: "What's in the picture?"}}, Role: "user"},
-			{Parts: []*Part{
-				{FileData: &FileData{FileURI: "https://storage.googleapis.com/cloud-samples-data/generative-ai/image/scones.jpg", MIMEType: "image/jpeg"}},
-			},
-				Role: "user"}}, nil)
 	})
 }
 
@@ -318,7 +293,7 @@ func TestModelsGenerateContentStream(t *testing.T) {
 							args := extractArgs(ctx, t, method, testTableFile, testTableItem)
 							method.Call(args)
 							model := args[1].Interface().(string)
-							contents := args[2].Interface().(Contents)
+							contents := args[2].Interface().([]*Content)
 							config := args[3].Interface().(*GenerateContentConfig)
 							for response, err := range client.Models.GenerateContentStream(ctx, model, contents, config) {
 								if err != nil {

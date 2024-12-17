@@ -31,18 +31,6 @@ import (
 
 type unionDeserialize func([]byte) (reflect.Value, error)
 
-// Need dedicated deserializer for each union type because json string cannot be unmarshalled to
-// union type directly.
-var unionDeserializer = map[string]unionDeserialize{
-	"Contents": func(s []byte) (reflect.Value, error) {
-		var contents []*Content
-		if err := json.Unmarshal(s, &contents); err != nil {
-			return reflect.Value{}, err
-		}
-		return reflect.ValueOf(ContentSlice(contents)), nil // Construct the Contents
-	},
-}
-
 func snakeToPascal(s string) string {
 	parts := strings.Split(s, "_")
 	for i, part := range parts {
@@ -79,20 +67,11 @@ func extractArgs(ctx context.Context, t *testing.T, method reflect.Value, testTa
 				t.Error("ExtractArgs: error marshalling:", err)
 			}
 			paramType := method.Type().In(i)
-			if deserializer, ok := unionDeserializer[paramType.Name()]; ok {
-				convertedValue, err := deserializer(convertedJSON)
-				if err != nil {
-					t.Fatalf("ExtractArgs: error unmarshalling slice: %v, json: %s", err, string(convertedJSON))
-				}
-				args = append(args, convertedValue)
-			} else {
-				// Non union types.
-				convertedValue := reflect.New(paramType).Elem()
-				if err = json.Unmarshal(convertedJSON, convertedValue.Addr().Interface()); err != nil {
-					t.Error("ExtractArgs: error unmarshalling:", err, string(convertedJSON))
-				}
-				args = append(args, convertedValue)
+			convertedValue := reflect.New(paramType).Elem()
+			if err = json.Unmarshal(convertedJSON, convertedValue.Addr().Interface()); err != nil {
+				t.Error("ExtractArgs: error unmarshalling:", err, string(convertedJSON))
 			}
+			args = append(args, convertedValue)
 		} else {
 			args = append(args, reflect.New(method.Type().In(i)).Elem())
 		}

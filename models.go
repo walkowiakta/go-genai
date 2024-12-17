@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"iter"
+	"net/http"
 )
 
 func partToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
@@ -77,8 +78,9 @@ func partToVertex(ac *apiClient, fromObject map[string]any, parentObject map[str
 		setValueByPath(toObject, []string{"videoMetadata"}, fromVideoMetadata)
 	}
 
-	if getValueByPath(fromObject, []string{"thought"}) != nil {
-		return nil, fmt.Errorf("thought parameter is not supported in Vertex AI")
+	fromThought := getValueByPath(fromObject, []string{"thought"})
+	if fromThought != nil {
+		setValueByPath(toObject, []string{"thought"}, fromThought)
 	}
 
 	fromCodeExecutionResult := getValueByPath(fromObject, []string{"codeExecutionResult"})
@@ -1267,6 +1269,11 @@ func partFromVertex(ac *apiClient, fromObject map[string]any, parentObject map[s
 		setValueByPath(toObject, []string{"videoMetadata"}, fromVideoMetadata)
 	}
 
+	fromThought := getValueByPath(fromObject, []string{"thought"})
+	if fromThought != nil {
+		setValueByPath(toObject, []string{"thought"}, fromThought)
+	}
+
 	fromCodeExecutionResult := getValueByPath(fromObject, []string{"codeExecutionResult"})
 	if fromCodeExecutionResult != nil {
 		setValueByPath(toObject, []string{"codeExecutionResult"}, fromCodeExecutionResult)
@@ -1585,7 +1592,7 @@ func (m Models) generateContent(ctx context.Context, model string, contents []*C
 		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
 	}
 	delete(body, "_url")
-	responseMap, err = post(ctx, m.apiClient, path, &body)
+	responseMap, err = sendRequest(ctx, m.apiClient, path, http.MethodPost, &body)
 	if err != nil {
 		return nil, err
 	}
@@ -1635,7 +1642,7 @@ func (m Models) generateContentStream(ctx context.Context, model string, content
 		return yieldErrorAndEndIterator(fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err))
 	}
 	delete(body, "_url")
-	err = postStream(ctx, m.apiClient, path, &body, &rs)
+	err = sendStreamRequest(ctx, m.apiClient, path, http.MethodPost, &body, &rs)
 	if err != nil {
 		return yieldErrorAndEndIterator(err)
 	}
@@ -1654,11 +1661,23 @@ func (m Models) generateContentStream(ctx context.Context, model string, content
 }
 
 // GenerateContent calls the GenerateContent method on the model.
-func (m Models) GenerateContent(ctx context.Context, model string, contents Contents, config *GenerateContentConfig) (*GenerateContentResponse, error) {
-	return m.generateContent(ctx, model, contents.ToContents(), config)
+func (m Models) GenerateContent(ctx context.Context, model string, contents []*Content, config *GenerateContentConfig) (*GenerateContentResponse, error) {
+	if config != nil {
+		config.setDefaults()
+	}
+	for _, c := range contents {
+		c.setDefaults()
+	}
+	return m.generateContent(ctx, model, contents, config)
 }
 
 // GenerateContentStream calls the GenerateContentStream method on the model.
-func (m Models) GenerateContentStream(ctx context.Context, model string, contents Contents, config *GenerateContentConfig) iter.Seq2[*GenerateContentResponse, error] {
-	return m.generateContentStream(ctx, model, contents.ToContents(), config)
+func (m Models) GenerateContentStream(ctx context.Context, model string, contents []*Content, config *GenerateContentConfig) iter.Seq2[*GenerateContentResponse, error] {
+	if config != nil {
+		config.setDefaults()
+	}
+	for _, c := range contents {
+		c.setDefaults()
+	}
+	return m.generateContentStream(ctx, model, contents, config)
 }

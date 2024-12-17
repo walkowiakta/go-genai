@@ -33,8 +33,9 @@ type apiClient struct {
 	ClientConfig ClientConfig
 }
 
-func postStream[T responseStream[R], R any](ctx context.Context, ac *apiClient, path string, body any, output *responseStream[R]) error {
-	req, err := buildRequest(ac, path, body, http.MethodPost)
+// sendStreamRequest issues an server streaming API request and returns a map of the response contents.
+func sendStreamRequest[T responseStream[R], R any](ctx context.Context, ac *apiClient, path string, method string, body any, output *responseStream[R]) error {
+	req, err := buildRequest(ac, path, body, method)
 	if err != nil {
 		return err
 	}
@@ -48,9 +49,9 @@ func postStream[T responseStream[R], R any](ctx context.Context, ac *apiClient, 
 	return deserializeStreamResponse(resp, output)
 }
 
-// Post issues an API request and returns a map of the response contents.
-func post(ctx context.Context, ac *apiClient, path string, body any) (map[string]any, error) {
-	req, err := buildRequest(ac, path, body, http.MethodPost)
+// sendRequest issues an API request and returns a map of the response contents.
+func sendRequest(ctx context.Context, ac *apiClient, path string, method string, body any) (map[string]any, error) {
+	req, err := buildRequest(ac, path, body, method)
 	if err != nil {
 		return nil, err
 	}
