@@ -364,8 +364,9 @@ type Content struct {
 	// List of parts that constitute a single message. Each part may have
 	// a different IANA MIME type.
 	Parts []*Part `json:"parts,omitempty"`
-	// Optional. The producer of the content. Must be either 'user' or 'model'. Useful to
-	// set for multi-turn conversations, otherwise can be left blank or unset.
+	// Optional. The producer of the content. Must be either 'user' or
+	// 'model'. Useful to set for multi-turn conversations, otherwise can be
+	// left blank or unset. If role is not specified, SDK will determine the role.
 	Role string `json:"role,omitempty"`
 }
 
