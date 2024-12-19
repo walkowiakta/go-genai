@@ -28,6 +28,7 @@ export GOOGLE_API_KEY={YOUR_API_KEY}
 go run samples/generate_audio.go --model=gemini-2.0-flash-exp
 */
 
+// imports
 import (
 	"context"
 	"encoding/json"
