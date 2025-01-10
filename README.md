@@ -1,6 +1,12 @@
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/googleapis/go-genai)
 [![Go Reference](https://pkg.go.dev/badge/google.golang.org/genai.svg)](https://pkg.go.dev/google.golang.org/genai)
 
+## ✨ NEW ✨
+
+### Google Gemini Multimodal Live support
+
+Introducing support for the Gemini Multimodal Live feature. Here's an example Multimodal Live server showing realtime conversation and video streaming: [code](./samples/live_streaming_server.py)
+
 # Google Gen AI Go SDK
 
 The Google Gen AI Go SDK enables developers to use Google's state-of-the-art

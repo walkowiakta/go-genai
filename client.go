@@ -125,7 +125,7 @@ func NewClient(ctx context.Context, cc *ClientConfig) (*Client, error) {
 		}
 	} else {
 		if cc.APIKey == "" {
-			return nil, fmt.Errorf("api key is required for Google AI backend. ClientConfig: %v", cc)
+			return nil, fmt.Errorf("api key is required for Google AI backend. ClientConfig: %v.\nYou can get the API key from https://ai.google.dev/gemini-api/docs/api-key", cc)
 		}
 	}
 
