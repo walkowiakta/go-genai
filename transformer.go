@@ -71,6 +71,25 @@ func tModel(ac *apiClient, origin any) (string, error) {
 	}
 }
 
+func tModelFullName(ac *apiClient, origin any) (string, error) {
+	switch model := origin.(type) {
+	case string:
+		name, err := tModel(ac, model)
+		if err != nil {
+			return "", fmt.Errorf("tModelFullName: %w", err)
+		}
+		if strings.HasPrefix(name, "publishers/") && ac.clientConfig.Backend == BackendVertexAI {
+			return fmt.Sprintf("projects/%s/locations/%s/%s", ac.clientConfig.Project, ac.clientConfig.Location, name), nil
+		} else if strings.HasPrefix(name, "models/") && ac.clientConfig.Backend == BackendVertexAI {
+			return fmt.Sprintf("projects/%s/locations/%s/publishers/google/%s", ac.clientConfig.Project, ac.clientConfig.Location, name), nil
+		} else {
+			return name, nil
+		}
+	default:
+		return "", fmt.Errorf("tModelFullName: model is not a string")
+	}
+}
+
 func tContent(_ *apiClient, content any) (any, error) {
 	return content, nil
 }

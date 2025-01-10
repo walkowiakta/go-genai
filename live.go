@@ -1,3 +1,17 @@
+// Copyright 2024 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package genai
 
 import (
@@ -34,21 +48,34 @@ func (r *Live) Connect(model string, config *LiveConnectConfig) (*Session, error
 	}
 
 	var u url.URL
+	var header http.Header
 	if r.apiClient.clientConfig.Backend == BackendVertexAI {
-		return nil, fmt.Errorf("not implemented")
+		token, err := r.apiClient.clientConfig.Credentials.TokenSource.Token()
+		if err != nil {
+			return nil, fmt.Errorf("failed to get token: %w", err)
+		}
+		header = http.Header{
+			"Content-Type":  []string{"application/json"},
+			"Authorization": []string{fmt.Sprintf("Bearer %s", token.AccessToken)},
+		}
+		u = url.URL{
+			Scheme: scheme,
+			Host:   baseURL.Host,
+			// TODO(b/372231289): support custom api version.
+			Path: "/ws/google.cloud.aiplatform.v1beta1.LlmBidiService/BidiGenerateContent",
+		}
 	} else {
 		u = url.URL{
 			Scheme: scheme,
 			Host:   baseURL.Host,
-			// Host:     "generativelanguage.googleapis.com",
 			// TODO(b/372231289): support custom api version.
 			Path:     "/ws/google.ai.generativelanguage.v1alpha.GenerativeService.BidiGenerateContent",
 			RawQuery: fmt.Sprintf("key=%s", r.apiClient.clientConfig.APIKey),
 		}
+		// TODO(b/372730941): support custom header
+		header = http.Header{}
 	}
 
-	// TODO(b/372730941): support custom header
-	header := http.Header{}
 	conn, _, err := websocket.DefaultDialer.Dial(u.String(), header)
 	if err != nil {
 		return nil, fmt.Errorf("Connect to %s failed: %w", u.String(), err)
@@ -57,7 +84,11 @@ func (r *Live) Connect(model string, config *LiveConnectConfig) (*Session, error
 		conn:      conn,
 		apiClient: r.apiClient,
 	}
-	kwargs := map[string]any{"model": model, "config": config}
+	modelFullName, err := tModelFullName(r.apiClient, model)
+	if err != nil {
+		return nil, err
+	}
+	kwargs := map[string]any{"model": modelFullName, "config": config}
 	parameterMap := make(map[string]any)
 	deepMarshal(kwargs, &parameterMap)
 
@@ -78,10 +109,14 @@ func (r *Live) Connect(model string, config *LiveConnectConfig) (*Session, error
 		return nil, fmt.Errorf("marshal LiveClientSetup failed: %w", err)
 	}
 	s.conn.WriteMessage(websocket.TextMessage, clientBytes)
+	_, err = s.Receive()
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to the server: %w", err)
+	}
 	return s, nil
 }
 
-// Send transmits a BidiClientMessage over the established websocket connection.
+// Send transmits a LiveClientMessage over the established websocket connection.
 // It returns an error if sending the message fails.
 func (s *Session) Send(input *LiveClientMessage) error {
 	if input.Setup != nil {
@@ -111,18 +146,20 @@ func (s *Session) Send(input *LiveClientMessage) error {
 	return s.conn.WriteMessage(websocket.TextMessage, []byte(data))
 }
 
-// Receive reads a BidiServerMessage from the websocket connection.
+// Receive reads a LiveServerMessage from the websocket connection.
 // It returns the received message or an error if reading or unmarshalling fails.
 func (s *Session) Receive() (*LiveServerMessage, error) {
 	messageType, msgBytes, err := s.conn.ReadMessage()
 	if err != nil {
 		return nil, err
 	}
-	// TODO(b/365983028): Implement response error handling.
 	responseMap := make(map[string]any)
 	err = json.Unmarshal(msgBytes, &responseMap)
 	if err != nil {
-		return nil, fmt.Errorf("invalid message format. messageType: %d, message: %s", messageType, msgBytes)
+		return nil, fmt.Errorf("invalid message format. Error %w. messageType: %d, message: %s", err, messageType, msgBytes)
+	}
+	if responseMap["error"] != nil {
+		return nil, fmt.Errorf("received error in response: %v", string(msgBytes))
 	}
 
 	var fromConverter func(*apiClient, map[string]any, map[string]any) (map[string]any, error)
@@ -576,7 +613,6 @@ func liveClientMessageToVertex(ac *apiClient, fromObject map[string]any, parentO
 func liveSendParametersToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
-
 	fromInput := getValueByPath(fromObject, []string{"input"})
 	if fromInput != nil {
 		fromInput, err = liveClientMessageToMldev(ac, fromInput.(map[string]any), toObject)
@@ -603,7 +639,6 @@ func liveSendParametersToVertex(ac *apiClient, fromObject map[string]any, parent
 
 	return toObject, nil
 }
-
 
 func liveServerSetupCompleteFromMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
