@@ -37,7 +37,7 @@ type Session struct {
 // Connect establishes a realtime connection to the specified model with given configuration.
 // It returns a Session object representing the connection or an error if the connection fails.
 func (r *Live) Connect(model string, config *LiveConnectConfig) (*Session, error) {
-	baseURL, err := url.Parse(r.apiClient.clientConfig.baseURL)
+	baseURL, err := url.Parse(r.apiClient.clientConfig.HTTPOptions.BaseURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse base URL: %w", err)
 	}

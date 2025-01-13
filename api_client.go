@@ -83,13 +83,13 @@ func (ac *apiClient) createAPIURL(suffix string) (*url.URL, error) {
 		if !strings.HasPrefix(suffix, "projects/") {
 			suffix = fmt.Sprintf("projects/%s/locations/%s/%s", ac.clientConfig.Project, ac.clientConfig.Location, suffix)
 		}
-		u, err := url.Parse(fmt.Sprintf("%s/v1beta1/%s", ac.clientConfig.baseURL, suffix))
+		u, err := url.Parse(fmt.Sprintf("%s/%s/%s", ac.clientConfig.HTTPOptions.BaseURL, ac.clientConfig.HTTPOptions.APIVersion, suffix))
 		if err != nil {
 			return nil, fmt.Errorf("createAPIURL: error parsing Vertex AI URL: %w", err)
 		}
 		return u, nil
 	} else {
-		u, err := url.Parse(fmt.Sprintf("%s/v1beta/%s", ac.clientConfig.baseURL, suffix))
+		u, err := url.Parse(fmt.Sprintf("%s/%s/%s", ac.clientConfig.HTTPOptions.BaseURL, ac.clientConfig.HTTPOptions.APIVersion, suffix))
 		if err != nil {
 			return nil, fmt.Errorf("createAPIURL: error parsing ML Dev URL: %w", err)
 		}

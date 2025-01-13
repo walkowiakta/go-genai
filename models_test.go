@@ -106,7 +106,9 @@ func setupTestServer(t *testing.T, backend Backend) *httptest.Server {
 func fakeClient(ctx context.Context, t *testing.T, server *httptest.Server, backend Backend) *Client {
 	t.Helper()
 	client, err := NewClient(ctx, &ClientConfig{
-		baseURL:    server.URL,
+		HTTPOptions: HTTPOptions{
+			BaseURL: server.URL,
+		},
 		HTTPClient: server.Client(),
 		Backend:    backend,
 	})

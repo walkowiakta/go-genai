@@ -20,6 +20,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
@@ -60,6 +61,20 @@ func (t Backend) String() string {
 	}
 }
 
+// HTTPOptions are user overridable HTTP options for the API.
+type HTTPOptions struct {
+	// BaseURL specifies the base URL for the API endpoint.
+	// If unset, defaults to "https://generativelanguage.googleapis.com/" for the Gemini API backend,
+	// and location-specific Vertex AI endpoint (e.g., "https://us-central1-aiplatform.googleapis.com/").
+	BaseURL string
+	// APIVersion specifies the version of the API to use.
+	// If unset, defaults to "v1beta" for the Gemini API, and "v1beta1" for the Vertex AI.
+	APIVersion string
+	// Timeout sets the timeout for HTTP requests in milliseconds.
+	// If unset, then there is no timeout enforced by HTTP Client. Note that there may still be API-side timeouts.
+	Timeout int
+}
+
 // ClientConfig is the configuration for the GenAI client.
 type ClientConfig struct {
 	APIKey      string              // API Key for GenAI. Required for BackendGoogleAI.
@@ -68,9 +83,7 @@ type ClientConfig struct {
 	Location    string              // GCP Location/Region for Vertex AI. Required for BackendVertexAI. See https://cloud.google.com/vertex-ai/docs/general/locations
 	Credentials *google.Credentials // Optional. Google credentials.  If not specified, application default credentials will be used.
 	HTTPClient  *http.Client        // Optional HTTP client to use. If nil, a default client will be created. For Vertex AI, this client must handle authentication appropriately.
-
-	// TODO(b/368630327): finalize Go custom HTTP design.
-	baseURL string // The base URL for the API. Should not typically be set by users.
+	HTTPOptions HTTPOptions         // Optional HTTP options to override.
 }
 
 // NewClient creates a new GenAI client.
@@ -137,12 +150,16 @@ func NewClient(ctx context.Context, cc *ClientConfig) (*Client, error) {
 		cc.Credentials = cred
 	}
 
-	if cc.baseURL == "" {
-		if cc.Backend == BackendVertexAI {
-			cc.baseURL = fmt.Sprintf("https://%s-aiplatform.googleapis.com/", cc.Location)
-		} else {
-			cc.baseURL = "https://generativelanguage.googleapis.com/"
-		}
+	if cc.HTTPOptions.BaseURL == "" && cc.Backend == BackendVertexAI {
+		cc.HTTPOptions.BaseURL = fmt.Sprintf("https://%s-aiplatform.googleapis.com/", cc.Location)
+	} else if cc.HTTPOptions.BaseURL == "" {
+		cc.HTTPOptions.BaseURL = "https://generativelanguage.googleapis.com/"
+	}
+
+	if cc.HTTPOptions.APIVersion == "" && cc.Backend == BackendVertexAI {
+		cc.HTTPOptions.APIVersion = "v1beta1"
+	} else if cc.HTTPOptions.APIVersion == "" {
+		cc.HTTPOptions.APIVersion = "v1beta"
 	}
 
 	if cc.HTTPClient == nil {
@@ -151,6 +168,10 @@ func NewClient(ctx context.Context, cc *ClientConfig) (*Client, error) {
 		} else {
 			cc.HTTPClient = &http.Client{}
 		}
+	}
+
+	if cc.HTTPOptions.Timeout > 0 {
+		cc.HTTPClient.Timeout = time.Duration(cc.HTTPOptions.Timeout) * time.Millisecond
 	}
 
 	ac := &apiClient{clientConfig: cc}

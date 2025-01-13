@@ -129,7 +129,7 @@ func TestLiveConnect(t *testing.T) {
 			}))
 			defer ts.Close()
 
-			tt.client.Live.apiClient.clientConfig.baseURL = strings.Replace(ts.URL, "http", "ws", 1)
+			tt.client.Live.apiClient.clientConfig.HTTPOptions.BaseURL = strings.Replace(ts.URL, "http", "ws", 1)
 			tt.client.Live.apiClient.clientConfig.HTTPClient = ts.Client()
 			if tt.client.Live.apiClient.clientConfig.Backend == BackendVertexAI {
 				tt.client.Live.apiClient.clientConfig.Credentials.TokenSource = mts
@@ -180,7 +180,7 @@ func TestLiveConnect(t *testing.T) {
 				ts := setupTestWebsocketServer(t, tt.wantRequestBodySlice, tt.fakeResponseBodySlice)
 				defer ts.Close()
 
-				tt.client.Live.apiClient.clientConfig.baseURL = strings.Replace(ts.URL, "http", "ws", 1)
+				tt.client.Live.apiClient.clientConfig.HTTPOptions.BaseURL = strings.Replace(ts.URL, "http", "ws", 1)
 				tt.client.Live.apiClient.clientConfig.HTTPClient = ts.Client()
 				if tt.client.Live.apiClient.clientConfig.Backend == BackendVertexAI {
 					tt.client.Live.apiClient.clientConfig.Credentials.TokenSource = mts

@@ -163,7 +163,7 @@ func TestTable(t *testing.T) {
 							config := ClientConfig{Backend: backend.Backend}
 							replayClient := createReplayAPIClient(t, testTableDirectory, testTableItem, backend.name)
 							if *mode == "replay" {
-								config.baseURL = replayClient.GetBaseURL()
+								config.HTTPOptions.BaseURL = replayClient.GetBaseURL()
 								config.HTTPClient, err = replayClient.CreateClient(ctx)
 							}
 							if backend.Backend == BackendVertexAI {
