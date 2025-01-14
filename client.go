@@ -40,11 +40,11 @@ const (
 	// BackendUnspecified causes the backend determined automatically. If the
 	// GOOGLE_GENAI_USE_VERTEXAI environment variable is set to "1" or "true", then
 	// the backend is `BackendVertexAI`. Otherwise, if GOOGLE_GENAI_USE_VERTEXAI
-	// is unset or set to any other value, then `BackendGoogleAI` is used.  Explicitly
+	// is unset or set to any other value, then `BackendGeminiAPI` is used.  Explicitly
 	// setting the backend in ClientConfig overrides the environment variable.
 	BackendUnspecified Backend = iota
-	// BackendGoogleAI is the Google AI backend.
-	BackendGoogleAI
+	// BackendGeminiAPI is the Gemini API backend.
+	BackendGeminiAPI
 	// BackendVertexAI is the Vertex AI backend.
 	BackendVertexAI
 )
@@ -52,8 +52,8 @@ const (
 // The Stringer interface for Backend.
 func (t Backend) String() string {
 	switch t {
-	case BackendGoogleAI:
-		return "BackendGoogleAI"
+	case BackendGeminiAPI:
+		return "BackendGeminiAPI"
 	case BackendVertexAI:
 		return "BackendVertexAI"
 	default:
@@ -77,8 +77,8 @@ type HTTPOptions struct {
 
 // ClientConfig is the configuration for the GenAI client.
 type ClientConfig struct {
-	APIKey      string              // API Key for GenAI. Required for BackendGoogleAI.
-	Backend     Backend             // Backend for GenAI. See Backend constants. Defaults to BackendGoogleAI unless explicitly set to BackendVertexAI, or the environment variable GOOGLE_GENAI_USE_VERTEXAI is set to "1" or "true".
+	APIKey      string              // API Key for GenAI. Required for BackendGeminiAPI.
+	Backend     Backend             // Backend for GenAI. See Backend constants. Defaults to BackendGeminiAPI unless explicitly set to BackendVertexAI, or the environment variable GOOGLE_GENAI_USE_VERTEXAI is set to "1" or "true".
 	Project     string              // GCP Project ID for Vertex AI. Required for BackendVertexAI.
 	Location    string              // GCP Location/Region for Vertex AI. Required for BackendVertexAI. See https://cloud.google.com/vertex-ai/docs/general/locations
 	Credentials *google.Credentials // Optional. Google credentials.  If not specified, application default credentials will be used.
@@ -107,15 +107,15 @@ func NewClient(ctx context.Context, cc *ClientConfig) (*Client, error) {
 			if v == "1" || v == "true" {
 				cc.Backend = BackendVertexAI
 			} else {
-				cc.Backend = BackendGoogleAI
+				cc.Backend = BackendGeminiAPI
 			}
 		} else {
-			cc.Backend = BackendGoogleAI
+			cc.Backend = BackendGeminiAPI
 		}
 	}
 
 	// Only set the API key for MLDev API.
-	if cc.APIKey == "" && cc.Backend == BackendGoogleAI {
+	if cc.APIKey == "" && cc.Backend == BackendGeminiAPI {
 		cc.APIKey = os.Getenv("GOOGLE_API_KEY")
 	}
 	if cc.Project == "" {

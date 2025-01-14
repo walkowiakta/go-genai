@@ -60,7 +60,7 @@ func ExampleNewClient_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatalf("failed to create client: %v", err)
@@ -93,7 +93,7 @@ func ExampleModels_GenerateContent_text_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -138,7 +138,7 @@ func ExampleModels_GenerateContent_texts_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -198,7 +198,7 @@ func ExampleModels_GenerateContent_inlineImage_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -267,7 +267,7 @@ func ExampleModels_GenerateContent_inlinePDF_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -336,7 +336,7 @@ func ExampleModels_GenerateContent_inlineAudio_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -403,7 +403,7 @@ func ExampleModels_GenerateContent_inlineVideo_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -462,7 +462,7 @@ func ExampleModels_GenerateContent_httpURL_vertexai() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -518,7 +518,7 @@ func ExampleModels_GenerateContent_googleSearchRetrieval_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -573,7 +573,7 @@ func ExampleModels_GenerateContent_codeExecution_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -635,7 +635,7 @@ func ExampleModels_GenerateContent_config_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -695,7 +695,7 @@ func ExampleModels_GenerateContent_systemInstruction_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -770,7 +770,7 @@ func ExampleModels_GenerateContentStream_text_geminiapi() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, &genai.ClientConfig{
 		APIKey:  apiKey,
-		Backend: genai.BackendGoogleAI,
+		Backend: genai.BackendGeminiAPI,
 	})
 	if err != nil {
 		log.Fatal(err)

@@ -53,7 +53,7 @@ func vertexAIClient(ctx context.Context, t *testing.T) *Client {
 
 func mlDevClient(ctx context.Context, t *testing.T) *Client {
 	t.Helper()
-	client, err := NewClient(ctx, &ClientConfig{Backend: BackendGoogleAI})
+	client, err := NewClient(ctx, &ClientConfig{Backend: BackendGeminiAPI})
 	if err != nil {
 		t.Fatalf("NewClient failed: %v", err)
 	}
@@ -126,8 +126,8 @@ func vertexAIFakeClient(ctx context.Context, t *testing.T) *Client {
 
 func mldevFakeClient(ctx context.Context, t *testing.T) *Client {
 	t.Helper()
-	mlDevServer := setupTestServer(t, BackendGoogleAI)
-	return fakeClient(ctx, t, mlDevServer, BackendGoogleAI)
+	mlDevServer := setupTestServer(t, BackendGeminiAPI)
+	return fakeClient(ctx, t, mlDevServer, BackendGeminiAPI)
 }
 
 type xpTestParams struct {

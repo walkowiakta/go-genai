@@ -67,21 +67,21 @@ func TestModelTransformer(t *testing.T) {
 
 		{
 			name:         "GoogleAI_Model_Short",
-			backend:      BackendGoogleAI,
+			backend:      BackendGeminiAPI,
 			input:        "gemini-2.0-flash-exp",
 			want:         "models/gemini-2.0-flash-exp",
 			wantFullName: "models/gemini-2.0-flash-exp",
 		},
 		{
 			name:         "GoogleAI_Model_Full",
-			backend:      BackendGoogleAI,
+			backend:      BackendGeminiAPI,
 			input:        "models/gemini-2.0-flash-exp",
 			want:         "models/gemini-2.0-flash-exp",
 			wantFullName: "models/gemini-2.0-flash-exp",
 		},
 		{
 			name:         "GoogleAI_Model_TunedModel",
-			backend:      BackendGoogleAI,
+			backend:      BackendGeminiAPI,
 			input:        "tunedModels/your-tuned-model",
 			want:         "tunedModels/your-tuned-model",
 			wantFullName: "tunedModels/your-tuned-model",

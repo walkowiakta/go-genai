@@ -33,7 +33,7 @@ func live(w http.ResponseWriter, r *http.Request) {
 	defer c.Close()
 
 	ctx := context.Background()
-	client, err := genai.NewClient(ctx, &genai.ClientConfig{Backend: genai.BackendGoogleAI})
+	client, err := genai.NewClient(ctx, &genai.ClientConfig{Backend: genai.BackendGeminiAPI})
 	if err != nil {
 		log.Fatal("create client error: ", err)
 		return

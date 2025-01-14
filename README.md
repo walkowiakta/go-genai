@@ -42,7 +42,7 @@ import "google.golang.org/genai"
 ```go
 client, err := genai.NewClient(ctx, &genai.ClientConfig{
 	APIKey:   apiKey,
-	Backend:  genai.BackendGoogleAI,
+	Backend:  genai.BackendGeminiAPI,
 })
 ```
 

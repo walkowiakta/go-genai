@@ -168,8 +168,8 @@ func TestNewClient(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
 			}
-			if client.clientConfig.Backend != BackendGoogleAI {
-				t.Errorf("Expected location %s, got %s", BackendGoogleAI, client.clientConfig.Backend)
+			if client.clientConfig.Backend != BackendGeminiAPI {
+				t.Errorf("Expected location %s, got %s", BackendGeminiAPI, client.clientConfig.Backend)
 			}
 		})
 
@@ -194,8 +194,8 @@ func TestNewClient(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
 			}
-			if client.clientConfig.Backend != BackendGoogleAI {
-				t.Errorf("Expected Backend %s, got %s", BackendGoogleAI, client.clientConfig.Backend)
+			if client.clientConfig.Backend != BackendGeminiAPI {
+				t.Errorf("Expected Backend %s, got %s", BackendGeminiAPI, client.clientConfig.Backend)
 			}
 		})
 
@@ -203,12 +203,12 @@ func TestNewClient(t *testing.T) {
 			os.Setenv("GOOGLE_GENAI_USE_VERTEXAI", "true")
 			t.Cleanup(func() { os.Unsetenv("GOOGLE_GENAI_USE_VERTEXAI") })
 
-			client, err := NewClient(ctx, &ClientConfig{Backend: BackendGoogleAI, APIKey: "test-api-key"})
+			client, err := NewClient(ctx, &ClientConfig{Backend: BackendGeminiAPI, APIKey: "test-api-key"})
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
 			}
-			if client.clientConfig.Backend != BackendGoogleAI {
-				t.Errorf("Expected Backend %s, got %s", BackendGoogleAI, client.clientConfig.Backend)
+			if client.clientConfig.Backend != BackendGeminiAPI {
+				t.Errorf("Expected Backend %s, got %s", BackendGeminiAPI, client.clientConfig.Backend)
 			}
 		})
 	})
@@ -227,7 +227,7 @@ func TestNewClient(t *testing.T) {
 
 		t.Run("No api key when using GoogleAI", func(t *testing.T) {
 			unsetEnvVars(t)
-			_, err := NewClient(ctx, &ClientConfig{Backend: BackendGoogleAI})
+			_, err := NewClient(ctx, &ClientConfig{Backend: BackendGeminiAPI})
 			if err == nil {
 				t.Errorf("Expected error, got empty")
 			}
@@ -237,7 +237,7 @@ func TestNewClient(t *testing.T) {
 			apiKey := "test-api-key-env"
 			os.Setenv("GOOGLE_API_KEY", apiKey)
 			t.Cleanup(func() { os.Unsetenv("GOOGLE_API_KEY") })
-			client, err := NewClient(ctx, &ClientConfig{Backend: BackendGoogleAI})
+			client, err := NewClient(ctx, &ClientConfig{Backend: BackendGeminiAPI})
 			if err != nil {
 				t.Fatalf("Expected no error, got %v", err)
 			}
@@ -279,7 +279,7 @@ func TestNewClient(t *testing.T) {
 
 	t.Run("HTTPClient is read from passed config", func(t *testing.T) {
 		httpClient := &http.Client{}
-		client, err := NewClient(ctx, &ClientConfig{Backend: BackendGoogleAI, APIKey: "test-api-key", HTTPClient: httpClient})
+		client, err := NewClient(ctx, &ClientConfig{Backend: BackendGeminiAPI, APIKey: "test-api-key", HTTPClient: httpClient})
 		if err != nil {
 			t.Fatalf("Expected no error, got %v", err)
 		}
@@ -290,7 +290,7 @@ func TestNewClient(t *testing.T) {
 
 	t.Run("Pass nil config to NewClient", func(t *testing.T) {
 		want := ClientConfig{
-			Backend:    BackendGoogleAI,
+			Backend:    BackendGeminiAPI,
 			Project:    "test-project-env",
 			Location:   "test-location",
 			APIKey:     "test-api-key",
@@ -351,7 +351,7 @@ func TestClientConfigHTTPOptions(t *testing.T) {
 		{
 			name: "Google AI Backend with base URL, API Version and Timeout",
 			clientConfig: ClientConfig{
-				Backend: BackendGoogleAI,
+				Backend: BackendGeminiAPI,
 				HTTPOptions: HTTPOptions{
 					APIVersion: "v2",
 					Timeout:    5000,
@@ -395,7 +395,7 @@ func TestClientConfigHTTPOptions(t *testing.T) {
 			clientConfig: ClientConfig{
 				HTTPOptions: HTTPOptions{},
 				APIKey:      "test-api-key",
-				Backend:     BackendGoogleAI,
+				Backend:     BackendGeminiAPI,
 			},
 			expectedBaseURL:    "https://generativelanguage.googleapis.com/",
 			expectedAPIVersion: "v1beta",
@@ -417,7 +417,7 @@ func TestClientConfigHTTPOptions(t *testing.T) {
 		{
 			name: "Google AI Backend with HTTP Client Timeout and no HTTPOptions Timeout",
 			clientConfig: ClientConfig{
-				Backend:     BackendGoogleAI,
+				Backend:     BackendGeminiAPI,
 				HTTPOptions: HTTPOptions{},
 				APIKey:      "test-api-key",
 				HTTPClient:  &http.Client{Timeout: 5000 * time.Millisecond},
@@ -429,7 +429,7 @@ func TestClientConfigHTTPOptions(t *testing.T) {
 		{
 			name: "Google AI Backend with HTTP Client Timeout and HTTPOptions Timeout",
 			clientConfig: ClientConfig{
-				Backend: BackendGoogleAI,
+				Backend: BackendGeminiAPI,
 				HTTPOptions: HTTPOptions{
 					Timeout: 3000,
 				},

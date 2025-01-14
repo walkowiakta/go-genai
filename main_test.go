@@ -60,7 +60,7 @@ var (
 	}{
 		{
 			name:    "mldev",
-			Backend: BackendGoogleAI,
+			Backend: BackendGeminiAPI,
 		},
 		{
 			name:    "vertex",

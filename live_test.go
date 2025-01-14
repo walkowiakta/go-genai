@@ -40,7 +40,7 @@ func TestLiveConnect(t *testing.T) {
 	const model = "test-model"
 
 	mldevClient, err := NewClient(ctx, &ClientConfig{
-		Backend: BackendGoogleAI,
+		Backend: BackendGeminiAPI,
 		APIKey:  "test-api-key",
 	})
 	if err != nil {
