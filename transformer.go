@@ -113,3 +113,8 @@ func tSchema(_ *apiClient, origin any) (any, error) {
 func tSpeechConfig(_ *apiClient, speechConfig any) (any, error) {
 	return speechConfig, nil
 }
+
+func tBytes(_ *apiClient, fromImageBytes any) (any, error) {
+	// TODO(b/389133914): Remove dummy bytes converter.
+	return fromImageBytes, nil
+}

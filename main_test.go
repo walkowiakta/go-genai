@@ -20,6 +20,13 @@ var (
 		// TODO(b/380108306): bytes related tests are not supported in replay tests.
 		"vertex/models/generate_content_part/test_image_base64",
 		"mldev/models/generate_content_part/test_image_base64",
+		// TODO(b/383753309): Refactor replay test to use url safe base64.
+		"mldev/models/generate_image/test_all_mldev_config_parameters",
+		"mldev/models/generate_image/test_all_vertexai_config_parameters",
+		"mldev/models/generate_image/test_simple_prompt",
+		"vertex/models/generate_image/test_all_mldev_config_parameters",
+		"vertex/models/generate_image/test_all_vertexai_config_parameters",
+		"vertex/models/generate_image/test_simple_prompt",
 	}
 	disabledTestsByMode = map[string][]string{
 		apiMode: []string{
