@@ -45,7 +45,7 @@ func generateImage(ctx context.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	if client.ClientConfig.Backend == genai.BackendVertexAI {
+	if client.ClientConfig().Backend == genai.BackendVertexAI {
 		fmt.Println("Calling VertexAI GenerateImage API...")
 	} else {
 		fmt.Println("Calling GeminiAI GenerateImage API...")
