@@ -793,6 +793,28 @@ func speechConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject
 	return toObject, nil
 }
 
+func thinkingConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromIncludeThoughts := getValueByPath(fromObject, []string{"includeThoughts"})
+	if fromIncludeThoughts != nil {
+		setValueByPath(toObject, []string{"includeThoughts"}, fromIncludeThoughts)
+	}
+
+	return toObject, nil
+}
+
+func thinkingConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromIncludeThoughts := getValueByPath(fromObject, []string{"includeThoughts"})
+	if fromIncludeThoughts != nil {
+		setValueByPath(toObject, []string{"includeThoughts"}, fromIncludeThoughts)
+	}
+
+	return toObject, nil
+}
+
 func generateContentConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
@@ -959,6 +981,16 @@ func generateContentConfigToMldev(ac *apiClient, fromObject map[string]any, pare
 		}
 
 		setValueByPath(toObject, []string{"speechConfig"}, fromSpeechConfig)
+	}
+
+	fromThinkingConfig := getValueByPath(fromObject, []string{"thinkingConfig"})
+	if fromThinkingConfig != nil {
+		fromThinkingConfig, err = thinkingConfigToMldev(ac, fromThinkingConfig.(map[string]any), toObject)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"thinkingConfig"}, fromThinkingConfig)
 	}
 
 	return toObject, nil
@@ -1132,6 +1164,16 @@ func generateContentConfigToVertex(ac *apiClient, fromObject map[string]any, par
 		}
 
 		setValueByPath(toObject, []string{"speechConfig"}, fromSpeechConfig)
+	}
+
+	fromThinkingConfig := getValueByPath(fromObject, []string{"thinkingConfig"})
+	if fromThinkingConfig != nil {
+		fromThinkingConfig, err = thinkingConfigToVertex(ac, fromThinkingConfig.(map[string]any), toObject)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"thinkingConfig"}, fromThinkingConfig)
 	}
 
 	return toObject, nil
