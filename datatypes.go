@@ -634,6 +634,10 @@ type SpeechConfig struct {
 	VoiceConfig *VoiceConfig `json:"voiceConfig,omitempty"`
 }
 
+// The configuration for automatic function calling.
+type AutomaticFunctionCallingConfig struct {
+}
+
 // When automated routing is specified, the routing will be determined by the pretrained
 // routing model and customer provided model routing preference.
 type GenerationConfigRoutingConfigAutoRoutingMode struct {
@@ -1202,6 +1206,10 @@ type CountTokensResponse struct {
 	TotalTokens *int64 `json:"totalTokens,omitempty"`
 	// Number of tokens in the cached part of the prompt (the cached content).
 	CachedContentTokenCount *int64 `json:"cachedContentTokenCount,omitempty"`
+}
+
+// Optional parameters for computing tokens.
+type ComputeTokensConfig struct {
 }
 
 // Parameters for computing tokens.

@@ -2417,7 +2417,7 @@ func (m Models) ComputeTokens(ctx context.Context, model string, contents []*Con
 	kwargs := map[string]any{"model": model, "contents": contents, "config": config}
 	deepMarshal(kwargs, &parameterMap)
 
-	if m.apiClient.clientConfig.Backend == BackendGoogleAI {
+	if m.apiClient.clientConfig.Backend == BackendGeminiAPI {
 		return nil, fmt.Errorf("method ComputeTokens is only supported in Vertex AI backend.")
 	}
 
