@@ -1440,6 +1440,262 @@ func generateImageParametersToVertex(ac *apiClient, fromObject map[string]any, p
 	return toObject, nil
 }
 
+func countTokensConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
+	if fromHttpOptions != nil {
+		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
+	}
+
+	fromSystemInstruction := getValueByPath(fromObject, []string{"systemInstruction"})
+	if fromSystemInstruction != nil {
+		fromSystemInstruction, err = tContent(ac, fromSystemInstruction)
+		if err != nil {
+			return nil, err
+		}
+
+		fromSystemInstruction, err = contentToMldev(ac, fromSystemInstruction.(map[string]any), toObject)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(parentObject, []string{"generateContentRequest", "systemInstruction"}, fromSystemInstruction)
+	}
+
+	fromTools := getValueByPath(fromObject, []string{"tools"})
+	if fromTools != nil {
+		fromTools, err = applyConverterToSlice(ac, fromTools.([]any), toolToMldev)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(parentObject, []string{"generateContentRequest", "tools"}, fromTools)
+	}
+
+	if getValueByPath(fromObject, []string{"generationConfig"}) != nil {
+		return nil, fmt.Errorf("generation_config parameter is not supported in Google AI")
+	}
+
+	return toObject, nil
+}
+
+func countTokensConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
+	if fromHttpOptions != nil {
+		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
+	}
+
+	fromSystemInstruction := getValueByPath(fromObject, []string{"systemInstruction"})
+	if fromSystemInstruction != nil {
+		fromSystemInstruction, err = tContent(ac, fromSystemInstruction)
+		if err != nil {
+			return nil, err
+		}
+
+		fromSystemInstruction, err = contentToVertex(ac, fromSystemInstruction.(map[string]any), toObject)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(parentObject, []string{"systemInstruction"}, fromSystemInstruction)
+	}
+
+	fromTools := getValueByPath(fromObject, []string{"tools"})
+	if fromTools != nil {
+		fromTools, err = applyConverterToSlice(ac, fromTools.([]any), toolToVertex)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(parentObject, []string{"tools"}, fromTools)
+	}
+
+	fromGenerationConfig := getValueByPath(fromObject, []string{"generationConfig"})
+	if fromGenerationConfig != nil {
+		setValueByPath(parentObject, []string{"generationConfig"}, fromGenerationConfig)
+	}
+
+	return toObject, nil
+}
+
+func countTokensParametersToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromModel := getValueByPath(fromObject, []string{"model"})
+	if fromModel != nil {
+		fromModel, err = tModel(ac, fromModel)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"_url", "model"}, fromModel)
+	}
+
+	fromContents := getValueByPath(fromObject, []string{"contents"})
+	if fromContents != nil {
+		fromContents, err = tContents(ac, fromContents)
+		if err != nil {
+			return nil, err
+		}
+
+		fromContents, err = applyConverterToSlice(ac, fromContents.([]any), contentToMldev)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"contents"}, fromContents)
+	}
+
+	fromConfig := getValueByPath(fromObject, []string{"config"})
+	if fromConfig != nil {
+		fromConfig, err = countTokensConfigToMldev(ac, fromConfig.(map[string]any), toObject)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"config"}, fromConfig)
+	}
+
+	return toObject, nil
+}
+
+func countTokensParametersToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromModel := getValueByPath(fromObject, []string{"model"})
+	if fromModel != nil {
+		fromModel, err = tModel(ac, fromModel)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"_url", "model"}, fromModel)
+	}
+
+	fromContents := getValueByPath(fromObject, []string{"contents"})
+	if fromContents != nil {
+		fromContents, err = tContents(ac, fromContents)
+		if err != nil {
+			return nil, err
+		}
+
+		fromContents, err = applyConverterToSlice(ac, fromContents.([]any), contentToVertex)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"contents"}, fromContents)
+	}
+
+	fromConfig := getValueByPath(fromObject, []string{"config"})
+	if fromConfig != nil {
+		fromConfig, err = countTokensConfigToVertex(ac, fromConfig.(map[string]any), toObject)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"config"}, fromConfig)
+	}
+
+	return toObject, nil
+}
+
+func computeTokensConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
+	if fromHttpOptions != nil {
+		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
+	}
+
+	return toObject, nil
+}
+
+func computeTokensConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
+	if fromHttpOptions != nil {
+		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
+	}
+
+	return toObject, nil
+}
+
+func computeTokensParametersToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromModel := getValueByPath(fromObject, []string{"model"})
+	if fromModel != nil {
+		fromModel, err = tModel(ac, fromModel)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"_url", "model"}, fromModel)
+	}
+
+	if getValueByPath(fromObject, []string{"contents"}) != nil {
+		return nil, fmt.Errorf("contents parameter is not supported in Google AI")
+	}
+
+	fromConfig := getValueByPath(fromObject, []string{"config"})
+	if fromConfig != nil {
+		fromConfig, err = computeTokensConfigToMldev(ac, fromConfig.(map[string]any), toObject)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"config"}, fromConfig)
+	}
+
+	return toObject, nil
+}
+
+func computeTokensParametersToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromModel := getValueByPath(fromObject, []string{"model"})
+	if fromModel != nil {
+		fromModel, err = tModel(ac, fromModel)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"_url", "model"}, fromModel)
+	}
+
+	fromContents := getValueByPath(fromObject, []string{"contents"})
+	if fromContents != nil {
+		fromContents, err = tContents(ac, fromContents)
+		if err != nil {
+			return nil, err
+		}
+
+		fromContents, err = applyConverterToSlice(ac, fromContents.([]any), contentToVertex)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"contents"}, fromContents)
+	}
+
+	fromConfig := getValueByPath(fromObject, []string{"config"})
+	if fromConfig != nil {
+		fromConfig, err = computeTokensConfigToVertex(ac, fromConfig.(map[string]any), toObject)
+		if err != nil {
+			return nil, err
+		}
+
+		setValueByPath(toObject, []string{"config"}, fromConfig)
+	}
+
+	return toObject, nil
+}
+
 func partFromMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
@@ -1896,6 +2152,55 @@ func generateImageResponseFromVertex(ac *apiClient, fromObject map[string]any, p
 	return toObject, nil
 }
 
+func countTokensResponseFromMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromTotalTokens := getValueByPath(fromObject, []string{"totalTokens"})
+	if fromTotalTokens != nil {
+		setValueByPath(toObject, []string{"totalTokens"}, fromTotalTokens)
+	}
+
+	fromCachedContentTokenCount := getValueByPath(fromObject, []string{"cachedContentTokenCount"})
+	if fromCachedContentTokenCount != nil {
+		setValueByPath(toObject, []string{"cachedContentTokenCount"}, fromCachedContentTokenCount)
+	}
+
+	return toObject, nil
+}
+
+func countTokensResponseFromVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromTotalTokens := getValueByPath(fromObject, []string{"totalTokens"})
+	if fromTotalTokens != nil {
+		setValueByPath(toObject, []string{"totalTokens"}, fromTotalTokens)
+	}
+
+	return toObject, nil
+}
+
+func computeTokensResponseFromMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromTokensInfo := getValueByPath(fromObject, []string{"tokensInfo"})
+	if fromTokensInfo != nil {
+		setValueByPath(toObject, []string{"tokensInfo"}, fromTokensInfo)
+	}
+
+	return toObject, nil
+}
+
+func computeTokensResponseFromVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+	toObject = make(map[string]any)
+
+	fromTokensInfo := getValueByPath(fromObject, []string{"tokensInfo"})
+	if fromTokensInfo != nil {
+		setValueByPath(toObject, []string{"tokensInfo"}, fromTokensInfo)
+	}
+
+	return toObject, nil
+}
+
 type Models struct {
 	apiClient *apiClient
 }
@@ -1923,7 +2228,12 @@ func (m Models) generateContent(ctx context.Context, model string, contents []*C
 		return nil, err
 	}
 	urlParams := body["_url"].(map[string]any)
-	path, err := formatMap("{model}:generateContent", urlParams)
+	var path string
+	if m.apiClient.clientConfig.Backend == BackendVertexAI {
+		path, err = formatMap("{model}:generateContent", urlParams)
+	} else {
+		path, err = formatMap("{model}:generateContent", urlParams)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
 	}
@@ -1974,7 +2284,12 @@ func (m Models) generateContentStream(ctx context.Context, model string, content
 		return yieldErrorAndEndIterator(err)
 	}
 	urlParams := body["_url"].(map[string]any)
-	path, err := formatMap("{model}:streamGenerateContent?alt=sse", urlParams)
+	var path string
+	if m.apiClient.clientConfig.Backend == BackendVertexAI {
+		path, err = formatMap("{model}:streamGenerateContent?alt=sse", urlParams)
+	} else {
+		path, err = formatMap("{model}:streamGenerateContent?alt=sse", urlParams)
+	}
 	if err != nil {
 		return yieldErrorAndEndIterator(fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err))
 	}
@@ -2021,7 +2336,114 @@ func (m Models) GenerateImage(ctx context.Context, model string, prompt string, 
 		return nil, err
 	}
 	urlParams := body["_url"].(map[string]any)
-	path, err := formatMap("{model}:predict", urlParams)
+	var path string
+	if m.apiClient.clientConfig.Backend == BackendVertexAI {
+		path, err = formatMap("{model}:predict", urlParams)
+	} else {
+		path, err = formatMap("{model}:predict", urlParams)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
+	}
+	delete(body, "_url")
+	delete(body, "config")
+	responseMap, err = sendRequest(ctx, m.apiClient, path, http.MethodPost, &body)
+	if err != nil {
+		return nil, err
+	}
+	responseMap, err = fromConverter(m.apiClient, responseMap, nil)
+	if err != nil {
+		return nil, err
+	}
+	err = mapToStruct(responseMap, response)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+func (m Models) CountTokens(ctx context.Context, model string, contents []*Content, config *CountTokensConfig) (*CountTokensResponse, error) {
+	parameterMap := make(map[string]any)
+
+	kwargs := map[string]any{"model": model, "contents": contents, "config": config}
+	deepMarshal(kwargs, &parameterMap)
+
+	var response = new(CountTokensResponse)
+	var responseMap map[string]any
+	var fromConverter func(*apiClient, map[string]any, map[string]any) (map[string]any, error)
+	var toConverter func(*apiClient, map[string]any, map[string]any) (map[string]any, error)
+	if m.apiClient.clientConfig.Backend == BackendVertexAI {
+		toConverter = countTokensParametersToVertex
+		fromConverter = countTokensResponseFromVertex
+	} else {
+		toConverter = countTokensParametersToMldev
+		fromConverter = countTokensResponseFromMldev
+	}
+
+	body, err := toConverter(m.apiClient, parameterMap, nil)
+	if err != nil {
+		return nil, err
+	}
+	urlParams := body["_url"].(map[string]any)
+	var path string
+	if m.apiClient.clientConfig.Backend == BackendVertexAI {
+		path, err = formatMap("{model}:countTokens", urlParams)
+	} else {
+		path, err = formatMap("{model}:countTokens", urlParams)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
+	}
+	delete(body, "_url")
+	delete(body, "config")
+	responseMap, err = sendRequest(ctx, m.apiClient, path, http.MethodPost, &body)
+	if err != nil {
+		return nil, err
+	}
+	responseMap, err = fromConverter(m.apiClient, responseMap, nil)
+	if err != nil {
+		return nil, err
+	}
+	err = mapToStruct(responseMap, response)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+func (m Models) ComputeTokens(ctx context.Context, model string, contents []*Content, config *ComputeTokensConfig) (*ComputeTokensResponse, error) {
+	parameterMap := make(map[string]any)
+
+	kwargs := map[string]any{"model": model, "contents": contents, "config": config}
+	deepMarshal(kwargs, &parameterMap)
+
+	if m.apiClient.clientConfig.Backend == BackendGoogleAI {
+		return nil, fmt.Errorf("method ComputeTokens is only supported in Vertex AI backend.")
+	}
+
+	var response = new(ComputeTokensResponse)
+	var responseMap map[string]any
+	var fromConverter func(*apiClient, map[string]any, map[string]any) (map[string]any, error)
+	var toConverter func(*apiClient, map[string]any, map[string]any) (map[string]any, error)
+	if m.apiClient.clientConfig.Backend == BackendVertexAI {
+		toConverter = computeTokensParametersToVertex
+		fromConverter = computeTokensResponseFromVertex
+	} else {
+		toConverter = computeTokensParametersToMldev
+		fromConverter = computeTokensResponseFromMldev
+	}
+
+	body, err := toConverter(m.apiClient, parameterMap, nil)
+	if err != nil {
+		return nil, err
+	}
+	urlParams := body["_url"].(map[string]any)
+	var path string
+	if m.apiClient.clientConfig.Backend == BackendVertexAI {
+		path, err = formatMap("{model}:computeTokens", urlParams)
+	} else {
+		path, err = formatMap("None", urlParams)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
 	}

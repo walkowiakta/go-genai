@@ -18,8 +18,10 @@ package genai
 
 import (
 	"cloud.google.com/go/civil"
+	"encoding/json"
 	"errors"
 	"log"
+	"strconv"
 	"strings"
 )
 
@@ -1127,6 +1129,135 @@ type GenerateImageResponse struct {
 	GeneratedImages []*GeneratedImage `json:"generatedImages,omitempty"`
 }
 
+// Generation config.
+type GenerationConfig struct {
+	// Optional. If enabled, audio timestamp will be included in the request to the model.
+	// If zero value, then no audio timestamp will be included in model inference.
+	AudioTimestamp bool `json:"audioTimestamp,omitempty"`
+	// Optional. Number of candidates to generate.
+	CandidateCount *int64 `json:"candidateCount,omitempty"`
+	// Optional. Frequency penalties.
+	FrequencyPenalty *float64 `json:"frequencyPenalty,omitempty"`
+	// Optional. Logit probabilities.
+	Logprobs *int64 `json:"logprobs,omitempty"`
+	// Optional. The maximum number of output tokens to generate per message.
+	MaxOutputTokens *int64 `json:"maxOutputTokens,omitempty"`
+	// Optional. Positive penalties.
+	PresencePenalty *float64 `json:"presencePenalty,omitempty"`
+	// Optional. If true, export the logprobs results in response.
+	// If ResponseLogprobs is zero, then no token log probabilities will be returned from
+	// API.
+	ResponseLogprobs bool `json:"responseLogprobs,omitempty"`
+	// Optional. Output response mimetype of the generated candidate text. Supported mimetype:
+	// - `text/plain`: (default) Text output. - `application/json`: JSON response in the
+	// candidates. The model needs to be prompted to output the appropriate response type,
+	// otherwise the behavior is undefined. This is a preview feature.
+	ResponseMIMEType string `json:"responseMimeType,omitempty"`
+	// Optional. The `Schema` object allows the definition of input and output data types.
+	// These types can be objects, but also primitives and arrays. Represents a select subset
+	// of an [OpenAPI 3.0 schema object](https://spec.openapis.org/oas/v3.0.3#schema). If
+	// set, a compatible response_mime_type must also be set. Compatible mimetypes: `application/json`:
+	// Schema for JSON response.
+	ResponseSchema *Schema `json:"responseSchema,omitempty"`
+	// Optional. Routing configuration.
+	RoutingConfig *GenerationConfigRoutingConfig `json:"routingConfig,omitempty"`
+	// Optional. Seed.
+	Seed *int64 `json:"seed,omitempty"`
+	// Optional. Stop sequences.
+	StopSequences []string `json:"stopSequences,omitempty"`
+	// Optional. Controls the randomness of predictions.
+	Temperature *float64 `json:"temperature,omitempty"`
+	// Optional. If specified, top-k sampling will be used.
+	TopK *float64 `json:"topK,omitempty"`
+	// Optional. If specified, nucleus sampling will be used.
+	TopP *float64 `json:"topP,omitempty"`
+}
+
+// Config for the count_tokens method.
+type CountTokensConfig struct {
+	// Instructions for the model to steer it toward better performance.
+	SystemInstruction *Content `json:"systemInstruction,omitempty"`
+	// Code that enables the system to interact with external systems to
+	// perform an action outside of the knowledge and scope of the model.
+	Tools []*Tool `json:"tools,omitempty"`
+	// Configuration that the model uses to generate the response. Not
+	// supported by the Gemini Developer API.
+	GenerationConfig *GenerationConfig `json:"generationConfig,omitempty"`
+}
+
+// Parameters for counting tokens.
+type CountTokensParameters struct {
+	// ID of the model to use. For a list of models, see `Google models
+	// <https://cloud.google.com/vertex-ai/generative-ai/docs/learn/models>`_.
+	Model string `json:"model,omitempty"`
+	// Input content.
+	Contents []*Content `json:"contents,omitempty"`
+	// Configuration for counting tokens.
+	Config *CountTokensConfig `json:"config,omitempty"`
+}
+
+// Response for counting tokens.
+type CountTokensResponse struct {
+	// Total number of tokens.
+	TotalTokens *int64 `json:"totalTokens,omitempty"`
+	// Number of tokens in the cached part of the prompt (the cached content).
+	CachedContentTokenCount *int64 `json:"cachedContentTokenCount,omitempty"`
+}
+
+// Parameters for computing tokens.
+type ComputeTokensParameters struct {
+	// ID of the model to use. For a list of models, see `Google models
+	// <https://cloud.google.com/vertex-ai/generative-ai/docs/learn/models>`_.
+	Model string `json:"model,omitempty"`
+	// Input content.
+	Contents []*Content `json:"contents,omitempty"`
+	// Optional parameters for the request.
+	Config *ComputeTokensConfig `json:"config,omitempty"`
+}
+
+// Tokens info with a list of tokens and the corresponding list of token ids.
+type TokensInfo struct {
+	// Optional. Optional fields for the role from the corresponding Content.
+	Role string `json:"role,omitempty"`
+	// A list of token IDs from the input.
+	TokenIDs []int64 `json:"tokenIds,omitempty"`
+	// A list of tokens from the input.
+	Tokens [][]byte `json:"tokens,omitempty"`
+}
+
+func (ti *TokensInfo) UnmarshalJSON(data []byte) error {
+	aux := struct {
+		Role     string   `json:"role,omitempty"`
+		TokenIDs []string `json:"tokenIds,omitempty"`
+		Tokens   [][]byte `json:"tokens,omitempty"`
+	}{}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	// Convert the string value to int64
+	tokenIDs := []int64{}
+	for _, tokenID := range aux.TokenIDs {
+		tokenIDInt, err := strconv.ParseInt(tokenID, 10, 64)
+		if err != nil {
+			return err
+		}
+		tokenIDs = append(tokenIDs, tokenIDInt)
+	}
+	ti.TokenIDs = tokenIDs
+	ti.Role = aux.Role
+	ti.Tokens = aux.Tokens
+	return nil
+}
+
+// Response for computing tokens.
+type ComputeTokensResponse struct {
+	// Lists of tokens info from the input. A ComputeTokensRequest could have multiple instances
+	// with a prompt in each instance. We also need to return lists of tokens info for the
+	// request with multiple instances.
+	TokensInfo []*TokensInfo `json:"tokensInfo,omitempty"`
+}
+
 type testTableItem struct {
 	// The name of the test. This is used to derive the replay id.
 	Name string `json:"name,omitempty"`
@@ -1390,50 +1521,6 @@ type LiveServerMessage struct {
 	// Notification for the client that a previously issued `ToolCallMessage` with the specified
 	// `id`s should have been not executed and should be cancelled.
 	ToolCallCancellation *LiveServerToolCallCancellation `json:"toolCallCancellation,omitempty"`
-}
-
-// Generation config.
-type GenerationConfig struct {
-	// Optional. If enabled, audio timestamp will be included in the request to the model.
-	// If zero value, then no audio timestamp will be included in model inference.
-	AudioTimestamp bool `json:"audioTimestamp,omitempty"`
-	// Optional. Number of candidates to generate.
-	CandidateCount *int64 `json:"candidateCount,omitempty"`
-	// Optional. Frequency penalties.
-	FrequencyPenalty *float64 `json:"frequencyPenalty,omitempty"`
-	// Optional. Logit probabilities.
-	Logprobs *int64 `json:"logprobs,omitempty"`
-	// Optional. The maximum number of output tokens to generate per message.
-	MaxOutputTokens *int64 `json:"maxOutputTokens,omitempty"`
-	// Optional. Positive penalties.
-	PresencePenalty *float64 `json:"presencePenalty,omitempty"`
-	// Optional. If true, export the logprobs results in response.
-	// If ResponseLogprobs is zero, then no token log probabilities will be returned from
-	// API.
-	ResponseLogprobs bool `json:"responseLogprobs,omitempty"`
-	// Optional. Output response mimetype of the generated candidate text. Supported mimetype:
-	// - `text/plain`: (default) Text output. - `application/json`: JSON response in the
-	// candidates. The model needs to be prompted to output the appropriate response type,
-	// otherwise the behavior is undefined. This is a preview feature.
-	ResponseMIMEType string `json:"responseMimeType,omitempty"`
-	// Optional. The `Schema` object allows the definition of input and output data types.
-	// These types can be objects, but also primitives and arrays. Represents a select subset
-	// of an [OpenAPI 3.0 schema object](https://spec.openapis.org/oas/v3.0.3#schema). If
-	// set, a compatible response_mime_type must also be set. Compatible mimetypes: `application/json`:
-	// Schema for JSON response.
-	ResponseSchema *Schema `json:"responseSchema,omitempty"`
-	// Optional. Routing configuration.
-	RoutingConfig *GenerationConfigRoutingConfig `json:"routingConfig,omitempty"`
-	// Optional. Seed.
-	Seed *int64 `json:"seed,omitempty"`
-	// Optional. Stop sequences.
-	StopSequences []string `json:"stopSequences,omitempty"`
-	// Optional. Controls the randomness of predictions.
-	Temperature *float64 `json:"temperature,omitempty"`
-	// Optional. If specified, top-k sampling will be used.
-	TopK *float64 `json:"topK,omitempty"`
-	// Optional. If specified, nucleus sampling will be used.
-	TopP *float64 `json:"topP,omitempty"`
 }
 
 // Message contains configuration that will apply for the duration of the streaming

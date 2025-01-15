@@ -287,10 +287,8 @@ func unmarshal(data []byte, v any) error {
 	if err := json.Unmarshal(data, &m); err != nil {
 		return fmt.Errorf("ReplayAPIClient: error unmarshalling: %w", err)
 	}
-	// TODO(b/380886719): Modify the replay parser to ignore empty values for `map[string]any` types.
-	omitEmptyValues(m)
-	// 2. Modify the map so the keys are all in camel case.
-	convertKeysToCamelCase(m)
+	// 2. Sanitize the map so it matches Go SDK replay tests.
+	sanitizeReplayTestContent(m)
 	// 3. Marshal the modified map[string]any into JSON.
 	data, err := json.MarshalIndent(m, "", "  ")
 	if err != nil {
@@ -298,6 +296,13 @@ func unmarshal(data []byte, v any) error {
 	}
 	// 4. Unmarshal the modified JSON into the given type.
 	return json.Unmarshal(data, v)
+}
+
+func sanitizeReplayTestContent(m any) {
+	// TODO(b/380886719): Modify the replay parser to ignore empty values for `map[string]any` types.
+	omitEmptyValues(m)
+	// 2. Modify the map so the keys are all in camel case.
+	convertKeysToCamelCase(m)
 }
 
 // omitEmptyValues recursively traverses the given value and if it is a `map[string]any` or

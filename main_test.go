@@ -47,6 +47,8 @@ var (
 			"TestModelsGenerateContentStream/",
 			// TODO(b/383351834): Enable the test after the bug is fixed.
 			"TestTable/mldev/models/generate_content_config_zero_value",
+			// TODO(b/383753309): Enable the test after the bug is fixed.
+			"TestTable/vertex/models/compute_tokens/test_compute_tokens_unicode",
 		},
 		requestMode: []string{
 			"TestTable/",

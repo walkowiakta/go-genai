@@ -62,6 +62,7 @@ func extractArgs(ctx context.Context, t *testing.T, method reflect.Value, testTa
 		parameterName := testTableFile.ParameterNames[i-1]
 		parameterValue, ok := testTableItem.Parameters[parameterName]
 		if ok {
+			sanitizeReplayTestContent(parameterValue)
 			convertedJSON, err := json.Marshal(parameterValue)
 			if err != nil {
 				t.Error("ExtractArgs: error marshalling:", err)
