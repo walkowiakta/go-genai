@@ -27,6 +27,7 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -241,6 +242,23 @@ func (rac *replayAPIClient) assertRequest(sdkRequest *http.Request, want *replay
 			xStr := strings.ReplaceAll(x.(string), "{PROJECT_AND_LOCATION_PATH}", "")
 			yStr := strings.ReplaceAll(y.(string), "{PROJECT_AND_LOCATION_PATH}", "")
 			return strings.HasSuffix(xStr, yStr) || strings.HasSuffix(yStr, xStr)
+		})),
+		cmpOptionByPath(replayRequest{}, "BodySegments.model", cmp.Comparer(func(x, y any) bool {
+			xStr := strings.ReplaceAll(x.(string), "{PROJECT_AND_LOCATION_PATH}", "")
+			yStr := strings.ReplaceAll(y.(string), "{PROJECT_AND_LOCATION_PATH}", "")
+			return strings.HasSuffix(xStr, yStr) || strings.HasSuffix(yStr, xStr)
+		})),
+		cmpOptionByPath(replayRequest{}, "BodySegments.expireTime", cmp.Comparer(func(x, y any) bool {
+			xTime, err := time.Parse(time.RFC3339, x.(string))
+			if err != nil {
+				rac.t.Fatal("Error parsing time", err)
+			}
+			yTime, err := time.Parse(time.RFC3339, y.(string))
+			if err != nil {
+				rac.t.Fatal("Error parsing time", err)
+			}
+			return xTime.Equal(yTime)
+
 		})),
 		// Verifying generationConfig with default values logic.
 		cmpOptionByPath(replayRequest{}, "BodySegments.generationConfig", cmp.Comparer(func(x, y any) bool {

@@ -2269,8 +2269,12 @@ func (m Models) generateContent(ctx context.Context, model string, contents []*C
 	if err != nil {
 		return nil, err
 	}
-	urlParams := body["_url"].(map[string]any)
 	var path string
+	var urlParams map[string]any
+	if _, ok := body["_url"]; ok {
+		urlParams = body["_url"].(map[string]any)
+		delete(body, "_url")
+	}
 	if m.apiClient.clientConfig.Backend == BackendVertexAI {
 		path, err = formatMap("{model}:generateContent", urlParams)
 	} else {
@@ -2279,8 +2283,10 @@ func (m Models) generateContent(ctx context.Context, model string, contents []*C
 	if err != nil {
 		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
 	}
-	delete(body, "_url")
-	delete(body, "config")
+
+	if _, ok := body["config"]; ok {
+		delete(body, "config")
+	}
 	responseMap, err = sendRequest(ctx, m.apiClient, path, http.MethodPost, &body)
 	if err != nil {
 		return nil, err
@@ -2325,8 +2331,12 @@ func (m Models) generateContentStream(ctx context.Context, model string, content
 	if err != nil {
 		return yieldErrorAndEndIterator(err)
 	}
-	urlParams := body["_url"].(map[string]any)
 	var path string
+	var urlParams map[string]any
+	if _, ok := body["_url"]; ok {
+		urlParams = body["_url"].(map[string]any)
+		delete(body, "_url")
+	}
 	if m.apiClient.clientConfig.Backend == BackendVertexAI {
 		path, err = formatMap("{model}:streamGenerateContent?alt=sse", urlParams)
 	} else {
@@ -2377,8 +2387,12 @@ func (m Models) GenerateImage(ctx context.Context, model string, prompt string, 
 	if err != nil {
 		return nil, err
 	}
-	urlParams := body["_url"].(map[string]any)
 	var path string
+	var urlParams map[string]any
+	if _, ok := body["_url"]; ok {
+		urlParams = body["_url"].(map[string]any)
+		delete(body, "_url")
+	}
 	if m.apiClient.clientConfig.Backend == BackendVertexAI {
 		path, err = formatMap("{model}:predict", urlParams)
 	} else {
@@ -2387,8 +2401,10 @@ func (m Models) GenerateImage(ctx context.Context, model string, prompt string, 
 	if err != nil {
 		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
 	}
-	delete(body, "_url")
-	delete(body, "config")
+
+	if _, ok := body["config"]; ok {
+		delete(body, "config")
+	}
 	responseMap, err = sendRequest(ctx, m.apiClient, path, http.MethodPost, &body)
 	if err != nil {
 		return nil, err
@@ -2426,8 +2442,12 @@ func (m Models) CountTokens(ctx context.Context, model string, contents []*Conte
 	if err != nil {
 		return nil, err
 	}
-	urlParams := body["_url"].(map[string]any)
 	var path string
+	var urlParams map[string]any
+	if _, ok := body["_url"]; ok {
+		urlParams = body["_url"].(map[string]any)
+		delete(body, "_url")
+	}
 	if m.apiClient.clientConfig.Backend == BackendVertexAI {
 		path, err = formatMap("{model}:countTokens", urlParams)
 	} else {
@@ -2436,8 +2456,10 @@ func (m Models) CountTokens(ctx context.Context, model string, contents []*Conte
 	if err != nil {
 		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
 	}
-	delete(body, "_url")
-	delete(body, "config")
+
+	if _, ok := body["config"]; ok {
+		delete(body, "config")
+	}
 	responseMap, err = sendRequest(ctx, m.apiClient, path, http.MethodPost, &body)
 	if err != nil {
 		return nil, err
@@ -2479,8 +2501,12 @@ func (m Models) ComputeTokens(ctx context.Context, model string, contents []*Con
 	if err != nil {
 		return nil, err
 	}
-	urlParams := body["_url"].(map[string]any)
 	var path string
+	var urlParams map[string]any
+	if _, ok := body["_url"]; ok {
+		urlParams = body["_url"].(map[string]any)
+		delete(body, "_url")
+	}
 	if m.apiClient.clientConfig.Backend == BackendVertexAI {
 		path, err = formatMap("{model}:computeTokens", urlParams)
 	} else {
@@ -2489,8 +2515,10 @@ func (m Models) ComputeTokens(ctx context.Context, model string, contents []*Con
 	if err != nil {
 		return nil, fmt.Errorf("invalid url params: %#v.\n%w", urlParams, err)
 	}
-	delete(body, "_url")
-	delete(body, "config")
+
+	if _, ok := body["config"]; ok {
+		delete(body, "config")
+	}
 	responseMap, err = sendRequest(ctx, m.apiClient, path, http.MethodPost, &body)
 	if err != nil {
 		return nil, err

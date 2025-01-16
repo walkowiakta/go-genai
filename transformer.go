@@ -90,6 +90,10 @@ func tModelFullName(ac *apiClient, origin any) (string, error) {
 	}
 }
 
+func tCachesModel(ac *apiClient, origin any) (string, error) {
+	return tModelFullName(ac, origin)
+}
+
 func tContent(_ *apiClient, content any) (any, error) {
 	return content, nil
 }

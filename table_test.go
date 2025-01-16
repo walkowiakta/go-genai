@@ -25,6 +25,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -204,9 +205,11 @@ func TestTable(t *testing.T) {
 									t.Fatalf("Calling method failed unexpectedly, err: %v", response[1].Interface().(error).Error())
 								}
 								// Assert the response when the call is successful.
-								got := convertSDKResponseToMatchReplayType(t, response[0].Elem().Interface())
-								want := replayClient.LatestInteraction().Response.SDKResponseSegments
-								if diff := cmp.Diff(got, want); diff != "" {
+								got := response[0].Elem().Interface()
+								want := convertReplayTypeToMatchSDKResponse(t, response[0].Elem().Type(), replayClient.LatestInteraction().Response.SDKResponseSegments[0])
+								if diff := cmp.Diff(got, want, cmp.Comparer(func(t1, t2 time.Time) bool {
+									return t1.Truncate(time.Microsecond).Equal(t2.Truncate(time.Microsecond))
+								})); diff != "" {
 									t.Errorf("Responses had diff (-got +want):\n%v", diff)
 								}
 							}
@@ -236,6 +239,23 @@ func convertSDKResponseToMatchReplayType(t *testing.T, response any) []map[strin
 		t.Fatal("Error unmarshalling want:", err)
 	}
 	return responseMap
+}
+
+func convertReplayTypeToMatchSDKResponse(t *testing.T, responseType reflect.Type, replayData map[string]any) any {
+	t.Helper()
+	replayJSON, err := json.Marshal(replayData)
+	if err != nil {
+		t.Fatal("Error marshalling replay data:", err)
+	}
+
+	targetValue := reflect.New(responseType).Interface()
+
+	err = json.Unmarshal(replayJSON, targetValue)
+	if err != nil {
+		t.Fatal("Error unmarshalling replay JSON:", err)
+	}
+
+	return reflect.ValueOf(targetValue).Elem().Interface()
 }
 
 func injectUnknownFields(t *testing.T, replayClient *replayAPIClient) {

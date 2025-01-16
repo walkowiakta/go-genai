@@ -23,6 +23,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Outcome of the code execution.
@@ -1273,6 +1274,107 @@ type ComputeTokensResponse struct {
 	// with a prompt in each instance. We also need to return lists of tokens info for the
 	// request with multiple instances.
 	TokensInfo []*TokensInfo `json:"tokensInfo,omitempty"`
+}
+
+// Class for configuring optional cached content creation parameters.
+type CreateCachedContentConfig struct {
+	// The TTL for this resource. The expiration time is computed: now + TTL.
+	TTL string `json:"ttl,omitempty"`
+	// Timestamp of when this resource is considered expired.
+	ExpireTime *time.Time `json:"expireTime,omitempty"`
+	// The user-generated meaningful display name of the cached content.
+	DisplayName string `json:"displayName,omitempty"`
+	// The content to cache.
+	Contents []*Content `json:"contents,omitempty"`
+	// Developer set system instruction.
+	SystemInstruction *Content `json:"systemInstruction,omitempty"`
+	// A list of `Tools` the model may use to generate the next response.
+	Tools []*Tool `json:"tools,omitempty"`
+	// Configuration for the tools to use. This config is shared for all tools.
+	ToolConfig *ToolConfig `json:"toolConfig,omitempty"`
+}
+
+// Parameters for caches.create method.
+type CreateCachedContentParameters struct {
+	// ID of the model to use. Example: gemini-1.5-flash
+	Model string `json:"model,omitempty"`
+	// Configuration that contains optional parameters.
+	Config *CreateCachedContentConfig `json:"config,omitempty"`
+}
+
+// Metadata on the usage of the cached content.
+type CachedContentUsageMetadata struct {
+	// Duration of audio in seconds.
+	AudioDurationSeconds *int64 `json:"audioDurationSeconds,omitempty"`
+	// Number of images.
+	ImageCount *int64 `json:"imageCount,omitempty"`
+	// Number of text characters.
+	TextCount *int64 `json:"textCount,omitempty"`
+	// Total number of tokens that the cached content consumes.
+	TotalTokenCount *int64 `json:"totalTokenCount,omitempty"`
+	// Duration of video in seconds.
+	VideoDurationSeconds *int64 `json:"videoDurationSeconds,omitempty"`
+}
+
+// A resource used in LLM queries for users to explicitly specify what to cache.
+type CachedContent struct {
+	// The server-generated resource name of the cached content.
+	Name string `json:"name,omitempty"`
+	// The user-generated meaningful display name of the cached content.
+	DisplayName string `json:"displayName,omitempty"`
+	// The name of the publisher model to use for cached content.
+	Model string `json:"model,omitempty"`
+	// Creatation time of the cache entry.
+	CreateTime *time.Time `json:"createTime,omitempty"`
+	// When the cache entry was last updated in UTC time.
+	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	// Expiration time of the cached content.
+	ExpireTime *time.Time `json:"expireTime,omitempty"`
+	// Metadata on the usage of the cached content.
+	UsageMetadata *CachedContentUsageMetadata `json:"usageMetadata,omitempty"`
+}
+
+// Optional parameters for caches.get method.
+type GetCachedContentConfig struct {
+}
+
+// Parameters for caches.get method.
+type GetCachedContentParameters struct {
+	// The server-generated resource name of the cached content.
+	Name string `json:"name,omitempty"`
+	// Optional parameters for the request.
+	Config *GetCachedContentConfig `json:"config,omitempty"`
+}
+
+// Optional parameters for caches.delete method.
+type DeleteCachedContentConfig struct {
+}
+
+// Parameters for caches.delete method.
+type DeleteCachedContentParameters struct {
+	// The server-generated resource name of the cached content.
+	Name string `json:"name,omitempty"`
+	// Optional parameters for the request.
+	Config *DeleteCachedContentConfig `json:"config,omitempty"`
+}
+
+// Empty response for caches.delete method.
+type DeleteCachedContentResponse struct {
+}
+
+// Optional parameters for caches.update method.
+type UpdateCachedContentConfig struct {
+	// The TTL for this resource. The expiration time is computed: now + TTL.
+	TTL string `json:"ttl,omitempty"`
+	// Timestamp of when this resource is considered expired.
+	ExpireTime *time.Time `json:"expireTime,omitempty"`
+}
+
+type UpdateCachedContentParameters struct {
+	// The server-generated resource name of the cached content.
+	Name string `json:"name,omitempty"`
+	// Configuration that contains optional parameters.
+	Config *UpdateCachedContentConfig `json:"config,omitempty"`
 }
 
 type testTableItem struct {

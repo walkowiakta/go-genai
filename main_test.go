@@ -49,6 +49,9 @@ var (
 			"TestTable/mldev/models/generate_content_config_zero_value",
 			// TODO(b/383753309): Enable the test after the bug is fixed.
 			"TestTable/vertex/models/compute_tokens/test_compute_tokens_unicode",
+			// TODO(b/383753309): Enable the test after the bug is fixed.
+			"TestTable/vertex/models/compute_tokens/test_compute_tokens",
+			"TestTable/vertex/models/compute_tokens/test_compute_tokens_vertex_custom_url",
 		},
 		requestMode: []string{
 			"TestTable/",
