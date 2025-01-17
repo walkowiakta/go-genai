@@ -742,6 +742,9 @@ type GenerateContentConfig struct {
 	MediaResolution MediaResolution `json:"mediaResolution,omitempty"`
 	// The speech generation configuration.
 	SpeechConfig *SpeechConfig `json:"speechConfig,omitempty"`
+	// If enabled, audio timestamp will be included in the request to the
+	// model.
+	AudioTimestamp *bool `json:"audioTimestamp,omitempty"`
 	// The thinking features configuration.
 	ThinkingConfig *ThinkingConfig `json:"thinkingConfig,omitempty"`
 }

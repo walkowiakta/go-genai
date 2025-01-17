@@ -983,6 +983,10 @@ func generateContentConfigToMldev(ac *apiClient, fromObject map[string]any, pare
 		setValueByPath(toObject, []string{"speechConfig"}, fromSpeechConfig)
 	}
 
+	if getValueByPath(fromObject, []string{"audioTimestamp"}) != nil {
+		return nil, fmt.Errorf("audio_timestamp parameter is not supported in Google AI")
+	}
+
 	fromThinkingConfig := getValueByPath(fromObject, []string{"thinkingConfig"})
 	if fromThinkingConfig != nil {
 		fromThinkingConfig, err = thinkingConfigToMldev(ac, fromThinkingConfig.(map[string]any), toObject)
@@ -1164,6 +1168,11 @@ func generateContentConfigToVertex(ac *apiClient, fromObject map[string]any, par
 		}
 
 		setValueByPath(toObject, []string{"speechConfig"}, fromSpeechConfig)
+	}
+
+	fromAudioTimestamp := getValueByPath(fromObject, []string{"audioTimestamp"})
+	if fromAudioTimestamp != nil {
+		setValueByPath(toObject, []string{"audioTimestamp"}, fromAudioTimestamp)
 	}
 
 	fromThinkingConfig := getValueByPath(fromObject, []string{"thinkingConfig"})
