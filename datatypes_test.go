@@ -41,8 +41,8 @@ func TestText(t *testing.T) {
 		{
 			name: "Multiple Candidates",
 			response: createGenerateContentResponse([]*Candidate{
-				{Content: &Content{Parts: []*Part{{Text: "text1", Thought: Ptr(false)}}}},
-				{Content: &Content{Parts: []*Part{{Text: "text2", Thought: Ptr(false)}}}},
+				{Content: &Content{Parts: []*Part{{Text: "text1", Thought: false}}}},
+				{Content: &Content{Parts: []*Part{{Text: "text2", Thought: false}}}},
 			}),
 			expectedText: "text1",
 		},
@@ -56,7 +56,7 @@ func TestText(t *testing.T) {
 		{
 			name: "Part With Text",
 			response: createGenerateContentResponse([]*Candidate{
-				{Content: &Content{Parts: []*Part{{Text: "text", Thought: Ptr(false)}}}},
+				{Content: &Content{Parts: []*Part{{Text: "text", Thought: false}}}},
 			}),
 			expectedText: "text",
 		},
@@ -64,8 +64,8 @@ func TestText(t *testing.T) {
 			name: "Multiple Parts With Text",
 			response: createGenerateContentResponse([]*Candidate{
 				{Content: &Content{Parts: []*Part{
-					{Text: "text1", Thought: Ptr(false)},
-					{Text: "text2", Thought: Ptr(false)},
+					{Text: "text1", Thought: false},
+					{Text: "text2", Thought: false},
 				}}},
 			}),
 			expectedText: "text1text2",
@@ -74,8 +74,8 @@ func TestText(t *testing.T) {
 			name: "Multiple Parts With Thought",
 			response: createGenerateContentResponse([]*Candidate{
 				{Content: &Content{Parts: []*Part{
-					{Text: "text1", Thought: Ptr(false)},
-					{Text: "text2", Thought: Ptr(true)},
+					{Text: "text1", Thought: false},
+					{Text: "text2", Thought: true},
 				}}},
 			}),
 			expectedText: "text1",
@@ -84,7 +84,7 @@ func TestText(t *testing.T) {
 			name: "Part With InlineData",
 			response: createGenerateContentResponse([]*Candidate{
 				{Content: &Content{Parts: []*Part{
-					{Text: "text1", Thought: Ptr(false)},
+					{Text: "text1", Thought: false},
 					{InlineData: &Blob{}},
 				}}},
 			}),

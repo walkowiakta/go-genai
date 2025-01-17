@@ -43,7 +43,7 @@ func TestContentHelpers(t *testing.T) {
 	})
 
 	t.Run("GenerateContentConfig_setDefaults", func(t *testing.T) {
-		expected := &GenerateContentConfig{SystemInstruction: &Content{Parts: []*Part{{Text: "Hello"}}, Role: roleUser}, CandidateCount: 1}
+		expected := &GenerateContentConfig{SystemInstruction: &Content{Parts: []*Part{{Text: "Hello"}}, Role: roleUser}}
 		got := &GenerateContentConfig{SystemInstruction: &Content{Parts: []*Part{{Text: "Hello"}}}}
 		got.setDefaults()
 		if diff := cmp.Diff(got, expected); diff != "" {
