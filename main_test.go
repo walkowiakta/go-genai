@@ -16,18 +16,7 @@ const (
 
 // TODO(b/382773687): Enable the TestModelsGenerateContentStream tests.
 var (
-	disabledTestsForAll = []string{
-		// TODO(b/380108306): bytes related tests are not supported in replay tests.
-		"vertex/models/generate_content_part/test_image_base64",
-		"mldev/models/generate_content_part/test_image_base64",
-		// TODO(b/383753309): Refactor replay test to use url safe base64.
-		"mldev/models/generate_image/test_all_mldev_config_parameters",
-		"mldev/models/generate_image/test_all_vertexai_config_parameters",
-		"mldev/models/generate_image/test_simple_prompt",
-		"vertex/models/generate_image/test_all_mldev_config_parameters",
-		"vertex/models/generate_image/test_all_vertexai_config_parameters",
-		"vertex/models/generate_image/test_simple_prompt",
-	}
+	disabledTestsForAll = []string{}
 	disabledTestsByMode = map[string][]string{
 		apiMode: []string{
 			"TestTable/",
@@ -43,16 +32,7 @@ var (
 			"TestModelsGenerateContentStream/mldev/models/generate_content_model",
 			"TestModelsGenerateContentAudio/",
 		},
-		replayMode: []string{
-			"TestModelsGenerateContentStream/",
-			// TODO(b/383351834): Enable the test after the bug is fixed.
-			"TestTable/mldev/models/generate_content_config_zero_value",
-			// TODO(b/383753309): Enable the test after the bug is fixed.
-			"TestTable/vertex/models/compute_tokens/test_compute_tokens_unicode",
-			// TODO(b/383753309): Enable the test after the bug is fixed.
-			"TestTable/vertex/models/compute_tokens/test_compute_tokens",
-			"TestTable/vertex/models/compute_tokens/test_compute_tokens_vertex_custom_url",
-		},
+		replayMode: []string{},
 		requestMode: []string{
 			"TestTable/",
 			"TestModelsGenerateContentStream/",

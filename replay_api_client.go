@@ -15,6 +15,7 @@
 package genai
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -28,6 +29,7 @@ import (
 	"strings"
 	"testing"
 	"time"
+	"encoding/base64"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -77,23 +79,11 @@ func (rac *replayAPIClient) LoadReplay(replayFilePath string) {
 	if rac.ReplaysDirectory != "" {
 		fullReplaysPath = filepath.Join(rac.ReplaysDirectory, replayFilePath)
 	}
-	ReplayFile, err := readReplayFile(fullReplaysPath)
-	if err != nil {
+	var replayFile replayFile
+	if err := readFileForReplayTest(fullReplaysPath, &replayFile); err != nil {
 		rac.t.Errorf("error loading replay file, %v", err)
 	}
-	rac.ReplayFile = ReplayFile
-}
-
-func readReplayFile(path string) (*replayFile, error) {
-	dat, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	var replayFile replayFile
-	if err := unmarshal(dat, &replayFile); err != nil {
-		return nil, err
-	}
-	return &replayFile, nil
+	rac.ReplayFile = &replayFile
 }
 
 // LatestInteraction returns the interaction that was returned by the last call to ServeHTTP.
@@ -134,57 +124,62 @@ func (rac *replayAPIClient) ServeHTTP(w http.ResponseWriter, req *http.Request) 
 	w.Write([]byte(strings.Join(bodySegments, "\n")))
 }
 
-// `re“ is a regex that matches the fields that should be ignored in a given cmp.Path.
-var re = regexp.MustCompile(strings.Join([]string{
-	"map\\[string\\]any", // map[string]any
-	"\\[\\]any",          // []any
-	"\\d",                // [0..9]
-	"\\[",                // [
-	"\\]",                // ]
-	"\\(",                // (
-	"\\)",                // )
-	"\"",                 // "
-	"\\*",                // *
-	"\\.",                // .
-}, "|"))
+func readFileForReplayTest[T any](path string, output *T) error {
+	dat, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
 
-func ignoreFields(a any, ignoringPath string) cmp.Option {
-	return cmp.FilterPath(func(p cmp.Path) bool {
-		if reflect.TypeOf(a) != p[0].Type().Elem() {
-			return false
-		}
-		pathArray := make([]string, 0, len(p))
-		for _, pathStep := range p[1:] {
-			step := re.ReplaceAllString(pathStep.String(), "")
-			if len(step) == 0 {
-				continue
-			}
-			pathArray = append(pathArray, step)
-		}
-		calculatedPath := strings.Join(pathArray, ".")
-		return strings.EqualFold(calculatedPath, ignoringPath)
-	}, cmp.Ignore())
+	var m map[string]any
+	if err := json.Unmarshal(dat, &m); err != nil {
+		return fmt.Errorf("error unmarshalling to map: %w", err)
+	}
+
+	omitEmptyValues(m)
+	convertKeysToCamelCase(m)
+
+	// Marshal the modified map back to struct
+	mapToStruct(m, output)
+
+	return nil
 }
 
-func cmpOptionByPath(a any, FieldPath string, opt cmp.Option) cmp.Option {
-	return cmp.FilterPath(func(p cmp.Path) bool {
-		if reflect.TypeOf(a) != p[0].Type().Elem() {
-			return false
-		}
-		pathArray := make([]string, 0, len(p))
-		for _, pathStep := range p[1:] {
-			step := re.ReplaceAllString(pathStep.String(), "")
-			if len(step) == 0 {
-				continue
-			}
-			pathArray = append(pathArray, step)
-		}
-		calculatedPath := strings.Join(pathArray, ".")
-		return strings.EqualFold(calculatedPath, FieldPath)
-	}, opt)
+// In testing server, host and scheme is empty.
+func redactReplayURL(url string) string {
+	url = strings.ReplaceAll(url, "{MLDEV_URL_PREFIX}/", "")
+	url = strings.ReplaceAll(url, "{VERTEX_URL_PREFIX}/", "")
+	return url
 }
 
-func (rac *replayAPIClient) assertRequest(sdkRequest *http.Request, want *replayRequest) {
+func redactSDKURL(url string) string {
+	if strings.Contains(url, "project") {
+		vertexRegexp := regexp.MustCompile(`.*/projects/[^/]+/locations/[^/]+/`)
+		url = vertexRegexp.ReplaceAllString(url, "")
+	} else {
+		mldevRegexp := regexp.MustCompile(`^\/[^/]+\/`)
+		url = mldevRegexp.ReplaceAllString(url, "")
+	}
+
+	return url
+}
+
+func redactProjectLocationPath(path string) string {
+	// Redact a field in the request that is known to vary based on project and
+	// location.
+	projectLocationRegexp := regexp.MustCompile(`projects/[^/]+/locations/[^/]+`)
+	return projectLocationRegexp.ReplaceAllString(path, "{PROJECT_AND_LOCATION_PATH}")
+}
+
+func redactRequestBody(body map[string]any) map[string]any {
+	for key, value := range body {
+		if _, ok := value.(string); ok {
+			body[key] = redactProjectLocationPath(value.(string))
+		}
+	}
+	return body
+}
+
+func (rac *replayAPIClient) assertRequest(sdkRequest *http.Request, replayRequest *replayRequest) {
 	rac.t.Helper()
 	sdkRequestBody, err := io.ReadAll(sdkRequest.Body)
 	if err != nil {
@@ -194,129 +189,37 @@ func (rac *replayAPIClient) assertRequest(sdkRequest *http.Request, want *replay
 	if err := json.Unmarshal(sdkRequestBody, &bodySegment); err != nil {
 		rac.t.Errorf("Error unmarshalling body, err: %+v", err)
 	}
+	bodySegment = redactRequestBody(bodySegment)
+
 	headers := make(map[string]string)
 	for k, v := range sdkRequest.Header {
 		headers[k] = strings.Join(v, ",")
 	}
-	got := &replayRequest{
-		Method:       sdkRequest.Method,
-		Url:          sdkRequest.URL.String(),
-		Headers:      headers,
-		BodySegments: []map[string]any{bodySegment},
+	// TODO(b/390425822): support headers validation.
+	got := map[string]any{
+		"method":       strings.ToLower(sdkRequest.Method),
+		"url":          redactSDKURL(sdkRequest.URL.String()),
+		"bodySegments": []map[string]any{bodySegment},
 	}
-	// TODO(b/383753309): Maybe it's better to adjust the expected replayRequest when reading from the
-	// replay file, instead of doing the adjustment logic in comparator.
-	// Because when comparator returns false, the diff message still shows the content before
-	// the adjustment.
-	opts := cmp.Options{
-		// Verifying that one url is the suffix of the other is enough for this validation.
-		cmpOptionByPath(replayRequest{}, "Url", cmp.Comparer(func(x, y string) bool {
-			vertexPrefix := regexp.MustCompile(`{VERTEX_URL_PREFIX}|{MLDEV_URL_PREFIX}`)
-			x = vertexPrefix.ReplaceAllString(x, "")
-			y = vertexPrefix.ReplaceAllString(y, "")
-			return strings.HasSuffix(x, y) || strings.HasSuffix(y, x)
-		})),
-		cmpOptionByPath(replayRequest{}, "Headers", cmp.Comparer(func(x, y map[string]string) bool {
-			requiredHeaders := []string{"user-agent", "x-goog-api-client", "content-type"}
-			keyToLowerCase := func(m map[string]string) map[string]string {
-				result := make(map[string]string)
-				for k, v := range m {
-					result[strings.ToLower(k)] = v
-				}
-				return result
-			}
-			x = keyToLowerCase(x)
-			y = keyToLowerCase(y)
-			for _, header := range requiredHeaders {
-				if _, ok := x[header]; !ok {
-					return false
-				}
-				if _, ok := y[header]; !ok {
-					return false
-				}
-			}
-			return true
-		})),
-		// Verifying that one cachedContent is the suffix of the other suffices for this validation.
-		cmpOptionByPath(replayRequest{}, "BodySegments.cachedContent", cmp.Comparer(func(x, y any) bool {
-			xStr := strings.ReplaceAll(x.(string), "{PROJECT_AND_LOCATION_PATH}", "")
-			yStr := strings.ReplaceAll(y.(string), "{PROJECT_AND_LOCATION_PATH}", "")
-			return strings.HasSuffix(xStr, yStr) || strings.HasSuffix(yStr, xStr)
-		})),
-		cmpOptionByPath(replayRequest{}, "BodySegments.model", cmp.Comparer(func(x, y any) bool {
-			xStr := strings.ReplaceAll(x.(string), "{PROJECT_AND_LOCATION_PATH}", "")
-			yStr := strings.ReplaceAll(y.(string), "{PROJECT_AND_LOCATION_PATH}", "")
-			return strings.HasSuffix(xStr, yStr) || strings.HasSuffix(yStr, xStr)
-		})),
-		cmpOptionByPath(replayRequest{}, "BodySegments.expireTime", cmp.Comparer(func(x, y any) bool {
-			xTime, err := time.Parse(time.RFC3339, x.(string))
-			if err != nil {
-				rac.t.Fatal("Error parsing time", err)
-			}
-			yTime, err := time.Parse(time.RFC3339, y.(string))
-			if err != nil {
-				rac.t.Fatal("Error parsing time", err)
-			}
-			return xTime.Equal(yTime)
 
-		})),
-		// Verifying generationConfig with default values logic.
-		cmpOptionByPath(replayRequest{}, "BodySegments.generationConfig", cmp.Comparer(func(x, y any) bool {
-			xStruct := &GenerateContentConfig{}
-			yStruct := &GenerateContentConfig{}
-			mapToStruct(x.(map[string]any), xStruct)
-			mapToStruct(y.(map[string]any), yStruct)
-			xStruct.setDefaults()
-			yStruct.setDefaults()
-			return reflect.DeepEqual(xStruct, yStruct)
-		})),
-		// Handles the lowercase/uppercase differences in the data, e.g. 'Method: "POST" vs "post"'.
-		cmp.FilterPath(func(p cmp.Path) bool {
-			return p.String() != "Url"
-		}, cmp.Comparer(func(x, y string) bool {
-			// There are cases where the replay file does not contain the new lines or the extra spaces in
-			// the request while the actual request does. We remove the new lines and extra spaces to
-			// avoid false negatives and only compare the actual data.
-			newLineRegexp := regexp.MustCompile(`\r?\n`)
-			x = newLineRegexp.ReplaceAllString(x, "")
-			y = newLineRegexp.ReplaceAllString(y, "")
-			multiSpaceRegexp := regexp.MustCompile(`\s+`)
-			x = multiSpaceRegexp.ReplaceAllString(x, " ")
-			y = multiSpaceRegexp.ReplaceAllString(y, " ")
-			x = strings.TrimSpace(x)
-			y = strings.TrimSpace(y)
-			return strings.EqualFold(x, y)
-		})),
+	want := map[string]any{
+		"method":       replayRequest.Method,
+		"url":          redactReplayURL(replayRequest.Url),
+		"bodySegments": replayRequest.BodySegments,
 	}
+
+	opts := cmp.Options{
+		stringComparator,
+		// TODO(b/390425822): Revert candidateCount back to pointer type.
+		ignoreFields("BodySegments.generationConfig.candidateCount"),
+	}
+
 	if diff := cmp.Diff(got, want, opts); diff != "" {
 		rac.t.Errorf("Requests had diffs (-got +want):\n%v", diff)
 	}
 }
 
-// TODO(b/378168548): Decouple the custom JSON unmarshaller from ReplayAPIClient.
-// Algorithm:
-// 1. Unmarshal the JSON into a map[string]any.
-// 2. Modify the map so the keys are all in camel case.
-// 3. Marshal the modified map[string]any into JSON.
-// 4. Unmarshal the modified JSON into the given type.
-func unmarshal(data []byte, v any) error {
-	// 1. Unmarshal the JSON into a map[string]any.
-	var m map[string]any
-	if err := json.Unmarshal(data, &m); err != nil {
-		return fmt.Errorf("ReplayAPIClient: error unmarshalling: %w", err)
-	}
-	// 2. Sanitize the map so it matches Go SDK replay tests.
-	sanitizeReplayTestContent(m)
-	// 3. Marshal the modified map[string]any into JSON.
-	data, err := json.MarshalIndent(m, "", "  ")
-	if err != nil {
-		return fmt.Errorf("ReplayAPIClient: error marshalling the modified map: %w", err)
-	}
-	// 4. Unmarshal the modified JSON into the given type.
-	return json.Unmarshal(data, v)
-}
-
-func sanitizeReplayTestContent(m any) {
+func initialSanitize(m any) {
 	// TODO(b/380886719): Modify the replay parser to ignore empty values for `map[string]any` types.
 	omitEmptyValues(m)
 	// 2. Modify the map so the keys are all in camel case.
@@ -389,4 +292,76 @@ func toCamelCase(s string) string {
 	}
 	// Concat the parts back together to mak a camelCase string.
 	return strings.Join(parts, "")
+}
+
+var stringComparator = cmp.Comparer(func(x, y string) bool {
+	if (timeStringComparator(x, y) || base64StringComparator(x, y)) {
+		return true
+	}
+	return x == y
+})
+
+var timeStringComparator = func(x, y string) bool {
+	xTime, err := time.Parse(time.RFC3339, x)
+	if err != nil {
+		return x == y
+	}
+	yTime, err := time.Parse(time.RFC3339, y)
+	if err != nil {
+		return x == y
+	}
+	return xTime.Truncate(time.Microsecond).Equal(yTime.Truncate(time.Microsecond))
+}
+
+var base64StringComparator = func(x, y string) bool {
+	// fmt.Println("x: ", x, " y: ", y)
+	stdBase64Handler := func(s string) ([]byte, error) {
+		b, err := base64.URLEncoding.DecodeString(s)
+		if err != nil {
+			b, err = base64.StdEncoding.DecodeString(s)
+			if err != nil {
+				return nil, fmt.Errorf("invalid base64 string %s", s)
+			}
+		}
+		return b, nil
+	}
+
+	xb, err := stdBase64Handler(x)
+	if err != nil {
+		return x == y
+	}
+	yb, err := stdBase64Handler(y)
+	if err != nil {
+		return x == y
+	}
+	return bytes.Equal(xb, yb)
+}
+
+// `re“ is a regex that matches the fields that should be ignored in a given cmp.Path.
+var re = regexp.MustCompile(strings.Join([]string{
+	"map\\[string\\]any", // map[string]any
+	"\\[\\]any",          // []any
+	"\\d",                // [0..9]
+	"\\[",                // [
+	"\\]",                // ]
+	"\\(",                // (
+	"\\)",                // )
+	"\"",                 // "
+	"\\*",                // *
+	"\\.",                // .
+}, "|"))
+
+func ignoreFields(ignoringPath string) cmp.Option {
+	return cmp.FilterPath(func(p cmp.Path) bool {
+		pathArray := make([]string, 0, len(p))
+		for _, pathStep := range p[1:] {
+			step := re.ReplaceAllString(pathStep.String(), "")
+			if len(step) == 0 {
+				continue
+			}
+			pathArray = append(pathArray, step)
+		}
+		calculatedPath := strings.Join(pathArray, ".")
+		return strings.EqualFold(calculatedPath, ignoringPath)
+	}, cmp.Ignore())
 }

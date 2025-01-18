@@ -18,19 +18,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
-	"time"
 
 	"github.com/google/go-cmp/cmp"
 )
-
-type unionDeserialize func([]byte) (reflect.Value, error)
 
 func snakeToPascal(s string) string {
 	parts := strings.Split(s, "_")
@@ -38,19 +34,6 @@ func snakeToPascal(s string) string {
 		parts[i] = strings.ToUpper(part[:1]) + part[1:]
 	}
 	return strings.Join(parts, "")
-}
-
-func readTestTableFile(t *testing.T, dir string) *testTableFile {
-	t.Helper()
-	data, err := ioutil.ReadFile(dir)
-	if err != nil {
-		t.Error("Error reading file:", err)
-	}
-	var testTableFile testTableFile
-	if err = json.Unmarshal(data, &testTableFile); err != nil {
-		t.Error("Error unmarshalling JSON:", err)
-	}
-	return &testTableFile
 }
 
 func extractArgs(ctx context.Context, t *testing.T, method reflect.Value, testTableFile *testTableFile, testTableItem *testTableItem) []reflect.Value {
@@ -63,12 +46,12 @@ func extractArgs(ctx context.Context, t *testing.T, method reflect.Value, testTa
 		parameterName := testTableFile.ParameterNames[i-1]
 		parameterValue, ok := testTableItem.Parameters[parameterName]
 		if ok {
-			sanitizeReplayTestContent(parameterValue)
+			paramType := method.Type().In(i)
+			sanitizeMapWithSourceType(t, paramType, parameterValue)
 			convertedJSON, err := json.Marshal(parameterValue)
 			if err != nil {
 				t.Error("ExtractArgs: error marshalling:", err)
 			}
-			paramType := method.Type().In(i)
 			convertedValue := reflect.New(paramType).Elem()
 			if err = json.Unmarshal(convertedJSON, convertedValue.Addr().Interface()); err != nil {
 				t.Error("ExtractArgs: error unmarshalling:", err, string(convertedJSON))
@@ -151,7 +134,10 @@ func TestTable(t *testing.T) {
 				testTableDirectory := filepath.Dir(strings.TrimPrefix(testFilePath, replayPath))
 				testName := strings.TrimPrefix(testTableDirectory, "/tests/")
 				t.Run(testName, func(t *testing.T) {
-					testTableFile := readTestTableFile(t, testFilePath)
+					var testTableFile testTableFile
+					if err := readFileForReplayTest(testFilePath, &testTableFile); err != nil {
+						t.Errorf("error loading test table file, %v", err)
+					}
 					for _, testTableItem := range testTableFile.TestTable {
 						t.Run(testTableItem.Name, func(t *testing.T) {
 							t.Parallel()
@@ -178,8 +164,8 @@ func TestTable(t *testing.T) {
 							if err != nil {
 								t.Fatalf("Error creating client: %v", err)
 							}
-							method := extractMethod(t, testTableFile, client)
-							args := extractArgs(ctx, t, method, testTableFile, testTableItem)
+							method := extractMethod(t, &testTableFile, client)
+							args := extractArgs(ctx, t, method, &testTableFile, testTableItem)
 
 							// Inject unknown fields to the replay file to simulate the case where the SDK adds
 							// unknown fields to the response.
@@ -205,11 +191,10 @@ func TestTable(t *testing.T) {
 									t.Fatalf("Calling method failed unexpectedly, err: %v", response[1].Interface().(error).Error())
 								}
 								// Assert the response when the call is successful.
-								got := response[0].Elem().Interface()
-								want := convertReplayTypeToMatchSDKResponse(t, response[0].Elem().Type(), replayClient.LatestInteraction().Response.SDKResponseSegments[0])
-								if diff := cmp.Diff(got, want, cmp.Comparer(func(t1, t2 time.Time) bool {
-									return t1.Truncate(time.Microsecond).Equal(t2.Truncate(time.Microsecond))
-								})); diff != "" {
+								got := convertSDKResponseToMatchReplayType(t, response[0].Elem().Interface())
+								want := replayClient.LatestInteraction().Response.SDKResponseSegments
+								opts := cmp.Options{stringComparator}
+								if diff := cmp.Diff(got, want, opts); diff != "" {
 									t.Errorf("Responses had diff (-got +want):\n%v", diff)
 								}
 							}
@@ -227,9 +212,6 @@ func TestTable(t *testing.T) {
 
 func convertSDKResponseToMatchReplayType(t *testing.T, response any) []map[string]any {
 	t.Helper()
-	if reflect.ValueOf(response).IsZero() {
-		return []map[string]any{}
-	}
 	responseJSON, err := json.MarshalIndent([]any{response}, "", "  ")
 	if err != nil {
 		t.Fatal("Error marshalling gotJSON:", err)
@@ -239,23 +221,6 @@ func convertSDKResponseToMatchReplayType(t *testing.T, response any) []map[strin
 		t.Fatal("Error unmarshalling want:", err)
 	}
 	return responseMap
-}
-
-func convertReplayTypeToMatchSDKResponse(t *testing.T, responseType reflect.Type, replayData map[string]any) any {
-	t.Helper()
-	replayJSON, err := json.Marshal(replayData)
-	if err != nil {
-		t.Fatal("Error marshalling replay data:", err)
-	}
-
-	targetValue := reflect.New(responseType).Interface()
-
-	err = json.Unmarshal(replayJSON, targetValue)
-	if err != nil {
-		t.Fatal("Error unmarshalling replay JSON:", err)
-	}
-
-	return reflect.ValueOf(targetValue).Elem().Interface()
 }
 
 func injectUnknownFields(t *testing.T, replayClient *replayAPIClient) {

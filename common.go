@@ -120,7 +120,7 @@ func applyItemTransformerToSlice[T any](ac *apiClient, inputs []T, itemTransform
 	return outputs, nil
 }
 
-func deepMarshal(input map[string]any, output *map[string]any) error {
+func deepMarshal(input any, output *map[string]any) error {
 	if inputBytes, err := json.Marshal(input); err != nil {
 		return fmt.Errorf("deepMarshal: unable to marshal input: %w", err)
 	} else if err := json.Unmarshal(inputBytes, output); err != nil {

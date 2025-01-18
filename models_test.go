@@ -253,8 +253,12 @@ func TestModelsGenerateContent(t *testing.T) {
 	})
 }
 
+// Stream test runs in api mode but read _test_table.json for retrieving test params.
 // TODO (b/382689811): Use replays when replay supports streams.
 func TestModelsGenerateContentStream(t *testing.T) {
+	if *mode == replayMode {
+		t.Skip("Skipping tests in replay mode")
+	}
 	ctx := context.Background()
 	replayPath := newReplayAPIClient(t).ReplaysDirectory
 
@@ -267,7 +271,10 @@ func TestModelsGenerateContentStream(t *testing.T) {
 				if info.Name() != "_test_table.json" {
 					return nil
 				}
-				testTableFile := readTestTableFile(t, testFilePath)
+				var testTableFile testTableFile
+				if err := readFileForReplayTest(testFilePath, &testTableFile); err != nil {
+					t.Errorf("error loading test table file, %v", err)
+				}
 				if strings.Contains(testTableFile.TestMethod, "stream") {
 					t.Fatal("Replays supports generate_content_stream now. Revitis these tests and use the replays instead.")
 				}
@@ -292,7 +299,7 @@ func TestModelsGenerateContentStream(t *testing.T) {
 							}
 							module := reflect.ValueOf(*client).FieldByName("Models")
 							method := module.MethodByName("GenerateContentStream")
-							args := extractArgs(ctx, t, method, testTableFile, testTableItem)
+							args := extractArgs(ctx, t, method, &testTableFile, testTableItem)
 							method.Call(args)
 							model := args[1].Interface().(string)
 							contents := args[2].Interface().([]*Content)

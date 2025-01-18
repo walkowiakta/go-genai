@@ -19,29 +19,34 @@ import (
 	"strings"
 )
 
-// TODO(b/376323000): align with python resource name implementation.
-func tResourceName(ac *apiClient, resourceName string, resourcePrefix string) string {
-	if ac.clientConfig.Backend == BackendVertexAI {
+func tResourceName(ac *apiClient, resourceName string, collectionIdentifier string, collectionHierarchyDepth int) string {
+	shouldPrependCollectionIdentifier := !strings.HasPrefix(resourceName, collectionIdentifier+"/") &&
+		strings.Count(collectionIdentifier+"/"+resourceName, "/")+1 == collectionHierarchyDepth
+
+	switch ac.clientConfig.Backend {
+	case BackendVertexAI:
 		if strings.HasPrefix(resourceName, "projects/") {
 			return resourceName
 		} else if strings.HasPrefix(resourceName, "locations/") {
 			return fmt.Sprintf("projects/%s/%s", ac.clientConfig.Project, resourceName)
-		} else if strings.HasPrefix(resourceName, fmt.Sprintf("%s/", resourcePrefix)) {
+		} else if strings.HasPrefix(resourceName, collectionIdentifier+"/") {
 			return fmt.Sprintf("projects/%s/locations/%s/%s", ac.clientConfig.Project, ac.clientConfig.Location, resourceName)
+		} else if shouldPrependCollectionIdentifier {
+			return fmt.Sprintf("projects/%s/locations/%s/%s/%s", ac.clientConfig.Project, ac.clientConfig.Location, collectionIdentifier, resourceName)
 		} else {
-			return fmt.Sprintf("projects/%s/locations/%s/%s/%s", ac.clientConfig.Project, ac.clientConfig.Location, resourcePrefix, resourceName)
-		}
-	} else {
-		if strings.HasPrefix(resourceName, fmt.Sprintf("%s/", resourcePrefix)) {
 			return resourceName
+		}
+	default:
+		if shouldPrependCollectionIdentifier {
+			return fmt.Sprintf("%s/%s", collectionIdentifier, resourceName)
 		} else {
-			return fmt.Sprintf("%s/%s", resourcePrefix, resourceName)
+			return resourceName
 		}
 	}
 }
 
 func tCachedContentName(ac *apiClient, name any) (string, error) {
-	return tResourceName(ac, name.(string), "cachedContents"), nil
+	return tResourceName(ac, name.(string), "cachedContents", 2), nil
 }
 
 func tModel(ac *apiClient, origin any) (string, error) {
