@@ -17,6 +17,7 @@ package genai
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -29,7 +30,6 @@ import (
 	"strings"
 	"testing"
 	"time"
-	"encoding/base64"
 
 	"github.com/google/go-cmp/cmp"
 )
@@ -295,7 +295,7 @@ func toCamelCase(s string) string {
 }
 
 var stringComparator = cmp.Comparer(func(x, y string) bool {
-	if (timeStringComparator(x, y) || base64StringComparator(x, y)) {
+	if timeStringComparator(x, y) || base64StringComparator(x, y) {
 		return true
 	}
 	return x == y

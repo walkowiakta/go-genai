@@ -379,7 +379,7 @@ type FunctionResponse struct {
 	Response map[string]any `json:"response,omitempty"`
 }
 
-// Content blob. It's preferred to send as text directly rather than raw bytes.
+// Content blob.
 type Blob struct {
 	// Required. Raw bytes.
 	Data []byte `json:"data,omitempty"`
