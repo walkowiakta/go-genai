@@ -635,10 +635,6 @@ type SpeechConfig struct {
 	VoiceConfig *VoiceConfig `json:"voiceConfig,omitempty"`
 }
 
-// The configuration for automatic function calling.
-type AutomaticFunctionCallingConfig struct {
-}
-
 // The thinking features configuration.
 type ThinkingConfig struct {
 	// Indicates whether to include thoughts in the response. If true, thoughts are returned
