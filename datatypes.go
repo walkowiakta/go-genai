@@ -415,6 +415,83 @@ type Part struct {
 	Text string `json:"text,omitempty"`
 }
 
+// NewPartFromURI builds a Part from a given file URI and mime type.
+func NewPartFromURI(fileURI, mimeType string) *Part {
+	return &Part{
+		FileData: &FileData{
+			FileURI:  fileURI,
+			MIMEType: mimeType,
+		},
+	}
+}
+
+// NewPartFromText builds a Part from a given text.
+func NewPartFromText(text string) *Part {
+	return &Part{
+		Text: text,
+	}
+}
+
+// NewPartFromBytes builds a Part from a given byte array and mime type.
+func NewPartFromBytes(data []byte, mimeType string) *Part {
+	return &Part{
+		InlineData: &Blob{
+			Data:     data,
+			MIMEType: mimeType,
+		},
+	}
+}
+
+// NewPartFromFunctionCall builds a Part from a given function call.
+func NewPartFromFunctionCall(name string, args map[string]any) *Part {
+	return &Part{
+		FunctionCall: &FunctionCall{
+			Name: name,
+			Args: args,
+		},
+	}
+}
+
+// NewPartFromFunctionResponse builds a Part from a given function response.
+func NewPartFromFunctionResponse(name string, response map[string]any) *Part {
+	return &Part{
+		FunctionResponse: &FunctionResponse{
+			Name:     name,
+			Response: response,
+		},
+	}
+}
+
+// NewPartFromVideoMetadata builds a Part from a given end offset and start offset.
+func NewPartFromVideoMetadata(endOffset, startOffset string) *Part {
+	return &Part{
+		VideoMetadata: &VideoMetadata{
+			EndOffset:   endOffset,
+			StartOffset: startOffset,
+		},
+	}
+}
+
+// NewPartFromExecutableCode builds a Part from a given executable code and language.
+func NewPartFromExecutableCode(code string, language Language) *Part {
+	return &Part{
+		ExecutableCode: &ExecutableCode{
+			Code:     code,
+			Language: language,
+		},
+	}
+}
+
+// NewPartFromCodeExecutionResult builds a Part from a given outcome and output.
+func NewPartFromCodeExecutionResult(outcome Outcome, output string) *Part {
+	return &Part{
+		CodeExecutionResult: &CodeExecutionResult{
+			Outcome: outcome,
+			Output:  output,
+		},
+	}
+}
+
 // Contains the multi-part content of a message.
 type Content struct {
 	// List of parts that constitute a single message. Each part may have

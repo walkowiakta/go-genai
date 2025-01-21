@@ -174,3 +174,127 @@ func TestFunctionCalls(t *testing.T) {
 		})
 	}
 }
+
+func TestNewPartFromURI(t *testing.T) {
+	fileURI := "http://example.com/video.mp4"
+	mimeType := "video/mp4"
+	expected := &Part{
+		FileData: &FileData{
+			FileURI:  fileURI,
+			MIMEType: mimeType,
+		},
+	}
+
+	result := NewPartFromURI(fileURI, mimeType)
+	if !reflect.DeepEqual(result, expected) {
+		t.Fatalf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNewPartFromText(t *testing.T) {
+	text := "Hello, world!"
+	expected := &Part{
+		Text: text,
+	}
+
+	result := NewPartFromText(text)
+	if !reflect.DeepEqual(result, expected) {
+		t.Fatalf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNewPartFromBytes(t *testing.T) {
+	data := []byte{0x01, 0x02, 0x03}
+	mimeType := "application/octet-stream"
+	expected := &Part{
+		InlineData: &Blob{
+			Data:     data,
+			MIMEType: mimeType,
+		},
+	}
+
+	result := NewPartFromBytes(data, mimeType)
+	if !reflect.DeepEqual(result, expected) {
+		t.Fatalf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNewPartFromFunctionCall(t *testing.T) {
+	funcName := "myFunction"
+	args := map[string]any{"arg1": "value1"}
+	expected := &Part{
+		FunctionCall: &FunctionCall{
+			Name: "myFunction",
+			Args: map[string]any{"arg1": "value1"},
+		},
+	}
+
+	result := NewPartFromFunctionCall(funcName, args)
+	if !reflect.DeepEqual(result, expected) {
+		t.Fatalf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNewPartFromFunctionResponse(t *testing.T) {
+	funcName := "myFunction"
+	response := map[string]any{"result": "success"}
+	expected := &Part{
+		FunctionResponse: &FunctionResponse{
+			Name:     "myFunction",
+			Response: map[string]any{"result": "success"},
+		},
+	}
+
+	result := NewPartFromFunctionResponse(funcName, response)
+	if !reflect.DeepEqual(result, expected) {
+		t.Fatalf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNewPartFromVideoMetadata(t *testing.T) {
+	endOffset := "00:01:00"
+	startOffset := "00:00:00"
+	expected := &Part{
+		VideoMetadata: &VideoMetadata{
+			EndOffset:   endOffset,
+			StartOffset: startOffset,
+		},
+	}
+
+	result := NewPartFromVideoMetadata(endOffset, startOffset)
+	if !reflect.DeepEqual(result, expected) {
+		t.Fatalf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNewPartFromExecutableCode(t *testing.T) {
+	code := "print('Hello, world!')"
+	language := LanguagePython
+	expected := &Part{
+		ExecutableCode: &ExecutableCode{
+			Code:     code,
+			Language: language,
+		},
+	}
+
+	result := NewPartFromExecutableCode(code, language)
+	if !reflect.DeepEqual(result, expected) {
+		t.Fatalf("expected %v, got %v", expected, result)
+	}
+}
+
+func TestNewPartFromCodeExecutionResult(t *testing.T) {
+	outcome := OutcomeOK
+	output := "Execution output"
+	expected := &Part{
+		CodeExecutionResult: &CodeExecutionResult{
+			Outcome: outcome,
+			Output:  output,
+		},
+	}
+
+	result := NewPartFromCodeExecutionResult(outcome, output)
+	if !reflect.DeepEqual(result, expected) {
+		t.Fatalf("expected %v, got %v", expected, result)
+	}
+}
