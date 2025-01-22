@@ -25,11 +25,6 @@ import (
 func createCachedContentConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
-
 	fromTtl := getValueByPath(fromObject, []string{"ttl"})
 	if fromTtl != nil {
 		setValueByPath(parentObject, []string{"ttl"}, fromTtl)
@@ -100,11 +95,6 @@ func createCachedContentConfigToMldev(ac *apiClient, fromObject map[string]any, 
 
 func createCachedContentConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
 
 	fromTtl := getValueByPath(fromObject, []string{"ttl"})
 	if fromTtl != nil {
@@ -226,28 +216,6 @@ func createCachedContentParametersToVertex(ac *apiClient, fromObject map[string]
 	return toObject, nil
 }
 
-func getCachedContentConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
-
-	return toObject, nil
-}
-
-func getCachedContentConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
-
-	return toObject, nil
-}
-
 func getCachedContentParametersToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
@@ -259,16 +227,6 @@ func getCachedContentParametersToMldev(ac *apiClient, fromObject map[string]any,
 		}
 
 		setValueByPath(toObject, []string{"_url", "name"}, fromName)
-	}
-
-	fromConfig := getValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		fromConfig, err = getCachedContentConfigToMldev(ac, fromConfig.(map[string]any), toObject)
-		if err != nil {
-			return nil, err
-		}
-
-		setValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -287,38 +245,6 @@ func getCachedContentParametersToVertex(ac *apiClient, fromObject map[string]any
 		setValueByPath(toObject, []string{"_url", "name"}, fromName)
 	}
 
-	fromConfig := getValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		fromConfig, err = getCachedContentConfigToVertex(ac, fromConfig.(map[string]any), toObject)
-		if err != nil {
-			return nil, err
-		}
-
-		setValueByPath(toObject, []string{"config"}, fromConfig)
-	}
-
-	return toObject, nil
-}
-
-func deleteCachedContentConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
-
-	return toObject, nil
-}
-
-func deleteCachedContentConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
-
 	return toObject, nil
 }
 
@@ -333,16 +259,6 @@ func deleteCachedContentParametersToMldev(ac *apiClient, fromObject map[string]a
 		}
 
 		setValueByPath(toObject, []string{"_url", "name"}, fromName)
-	}
-
-	fromConfig := getValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		fromConfig, err = deleteCachedContentConfigToMldev(ac, fromConfig.(map[string]any), toObject)
-		if err != nil {
-			return nil, err
-		}
-
-		setValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -361,26 +277,11 @@ func deleteCachedContentParametersToVertex(ac *apiClient, fromObject map[string]
 		setValueByPath(toObject, []string{"_url", "name"}, fromName)
 	}
 
-	fromConfig := getValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		fromConfig, err = deleteCachedContentConfigToVertex(ac, fromConfig.(map[string]any), toObject)
-		if err != nil {
-			return nil, err
-		}
-
-		setValueByPath(toObject, []string{"config"}, fromConfig)
-	}
-
 	return toObject, nil
 }
 
 func updateCachedContentConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
 
 	fromTtl := getValueByPath(fromObject, []string{"ttl"})
 	if fromTtl != nil {
@@ -397,11 +298,6 @@ func updateCachedContentConfigToMldev(ac *apiClient, fromObject map[string]any, 
 
 func updateCachedContentConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
 
 	fromTtl := getValueByPath(fromObject, []string{"ttl"})
 	if fromTtl != nil {

@@ -1273,11 +1273,6 @@ func generateContentParametersToVertex(ac *apiClient, fromObject map[string]any,
 func generateImageConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
-
 	if getValueByPath(fromObject, []string{"outputGcsUri"}) != nil {
 		return nil, fmt.Errorf("output_gcs_uri parameter is not supported in Google AI")
 	}
@@ -1350,11 +1345,6 @@ func generateImageConfigToMldev(ac *apiClient, fromObject map[string]any, parent
 
 func generateImageConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
 
 	fromOutputGcsUri := getValueByPath(fromObject, []string{"outputGcsUri"})
 	if fromOutputGcsUri != nil {
@@ -1494,11 +1484,6 @@ func generateImageParametersToVertex(ac *apiClient, fromObject map[string]any, p
 func countTokensConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
-
 	fromSystemInstruction := getValueByPath(fromObject, []string{"systemInstruction"})
 	if fromSystemInstruction != nil {
 		fromSystemInstruction, err = tContent(ac, fromSystemInstruction)
@@ -1533,11 +1518,6 @@ func countTokensConfigToMldev(ac *apiClient, fromObject map[string]any, parentOb
 
 func countTokensConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
 
 	fromSystemInstruction := getValueByPath(fromObject, []string{"systemInstruction"})
 	if fromSystemInstruction != nil {
@@ -1654,28 +1634,6 @@ func countTokensParametersToVertex(ac *apiClient, fromObject map[string]any, par
 	return toObject, nil
 }
 
-func computeTokensConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
-
-	return toObject, nil
-}
-
-func computeTokensConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromHttpOptions := getValueByPath(fromObject, []string{"httpOptions"})
-	if fromHttpOptions != nil {
-		setValueByPath(toObject, []string{"httpOptions"}, fromHttpOptions)
-	}
-
-	return toObject, nil
-}
-
 func computeTokensParametersToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
@@ -1691,16 +1649,6 @@ func computeTokensParametersToMldev(ac *apiClient, fromObject map[string]any, pa
 
 	if getValueByPath(fromObject, []string{"contents"}) != nil {
 		return nil, fmt.Errorf("contents parameter is not supported in Google AI")
-	}
-
-	fromConfig := getValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		fromConfig, err = computeTokensConfigToMldev(ac, fromConfig.(map[string]any), toObject)
-		if err != nil {
-			return nil, err
-		}
-
-		setValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
@@ -1732,16 +1680,6 @@ func computeTokensParametersToVertex(ac *apiClient, fromObject map[string]any, p
 		}
 
 		setValueByPath(toObject, []string{"contents"}, fromContents)
-	}
-
-	fromConfig := getValueByPath(fromObject, []string{"config"})
-	if fromConfig != nil {
-		fromConfig, err = computeTokensConfigToVertex(ac, fromConfig.(map[string]any), toObject)
-		if err != nil {
-			return nil, err
-		}
-
-		setValueByPath(toObject, []string{"config"}, fromConfig)
 	}
 
 	return toObject, nil
