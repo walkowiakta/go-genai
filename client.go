@@ -40,8 +40,8 @@ type Backend int
 const (
 	// BackendUnspecified causes the backend determined automatically. If the
 	// GOOGLE_GENAI_USE_VERTEXAI environment variable is set to "1" or "true", then
-	// the backend is `BackendVertexAI`. Otherwise, if GOOGLE_GENAI_USE_VERTEXAI
-	// is unset or set to any other value, then `BackendGeminiAPI` is used.  Explicitly
+	// the backend is BackendVertexAI. Otherwise, if GOOGLE_GENAI_USE_VERTEXAI
+	// is unset or set to any other value, then BackendGeminiAPI is used.  Explicitly
 	// setting the backend in ClientConfig overrides the environment variable.
 	BackendUnspecified Backend = iota
 	// BackendGeminiAPI is the Gemini API backend.

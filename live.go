@@ -23,12 +23,16 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// Live struct encapsulates the configuration for realtime interaction with the Generative Language API.
+// Live can be used to create a realtime connection to the API.
+// It is initiated when creating a client. You don't need to create a new Live object.
+//
+//	client, _ := genai.NewClient(ctx, &genai.ClientConfig{})
+//	session, _ := client.Live.Connect(model, &genai.LiveConnectConfig{}).
 type Live struct {
 	apiClient *apiClient
 }
 
-// Session struct represents a realtime connection to the API.
+// Session is a realtime connection to the API.
 type Session struct {
 	conn      *websocket.Conn
 	apiClient *apiClient
@@ -116,7 +120,7 @@ func (r *Live) Connect(model string, config *LiveConnectConfig) (*Session, error
 	return s, nil
 }
 
-// Send transmits a LiveClientMessage over the established websocket connection.
+// Send transmits a LiveClientMessage over the established connection.
 // It returns an error if sending the message fails.
 func (s *Session) Send(input *LiveClientMessage) error {
 	if input.Setup != nil {
@@ -146,7 +150,7 @@ func (s *Session) Send(input *LiveClientMessage) error {
 	return s.conn.WriteMessage(websocket.TextMessage, []byte(data))
 }
 
-// Receive reads a LiveServerMessage from the websocket connection.
+// Receive reads a LiveServerMessage from the connection.
 // It returns the received message or an error if reading or unmarshalling fails.
 func (s *Session) Receive() (*LiveServerMessage, error) {
 	messageType, msgBytes, err := s.conn.ReadMessage()
@@ -181,7 +185,7 @@ func (s *Session) Receive() (*LiveServerMessage, error) {
 	return message, err
 }
 
-// Close terminates the websocket connection.
+// Close terminates the connection.
 func (s *Session) Close() {
 	s.conn.Close()
 }

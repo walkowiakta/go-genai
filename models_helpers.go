@@ -30,9 +30,6 @@ func (c *GenerateContentConfig) setDefaults() {
 	if c == nil {
 		return
 	}
-	if c.CandidateCount == 0 {
-		c.CandidateCount = 1
-	}
 	if c.SystemInstruction != nil && c.SystemInstruction.Role == "" {
 		c.SystemInstruction.setDefaults()
 	}
