@@ -1383,7 +1383,7 @@ type CachedContent struct {
 	DisplayName string `json:"displayName,omitempty"`
 	// The name of the publisher model to use for cached content.
 	Model string `json:"model,omitempty"`
-	// Creatation time of the cache entry.
+	// Creation time of the cache entry.
 	CreateTime *time.Time `json:"createTime,omitempty"`
 	// When the cache entry was last updated in UTC time.
 	UpdateTime *time.Time `json:"updateTime,omitempty"`
