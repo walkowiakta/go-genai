@@ -1270,7 +1270,7 @@ func generateContentParametersToVertex(ac *apiClient, fromObject map[string]any,
 	return toObject, nil
 }
 
-func generateImageConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+func generateImagesConfigToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	if getValueByPath(fromObject, []string{"outputGcsUri"}) != nil {
@@ -1343,7 +1343,7 @@ func generateImageConfigToMldev(ac *apiClient, fromObject map[string]any, parent
 	return toObject, nil
 }
 
-func generateImageConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+func generateImagesConfigToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromOutputGcsUri := getValueByPath(fromObject, []string{"outputGcsUri"})
@@ -1419,7 +1419,7 @@ func generateImageConfigToVertex(ac *apiClient, fromObject map[string]any, paren
 	return toObject, nil
 }
 
-func generateImageParametersToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+func generateImagesParametersToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromModel := getValueByPath(fromObject, []string{"model"})
@@ -1439,7 +1439,7 @@ func generateImageParametersToMldev(ac *apiClient, fromObject map[string]any, pa
 
 	fromConfig := getValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = generateImageConfigToMldev(ac, fromConfig.(map[string]any), toObject)
+		fromConfig, err = generateImagesConfigToMldev(ac, fromConfig.(map[string]any), toObject)
 		if err != nil {
 			return nil, err
 		}
@@ -1450,7 +1450,7 @@ func generateImageParametersToMldev(ac *apiClient, fromObject map[string]any, pa
 	return toObject, nil
 }
 
-func generateImageParametersToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+func generateImagesParametersToVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromModel := getValueByPath(fromObject, []string{"model"})
@@ -1470,7 +1470,7 @@ func generateImageParametersToVertex(ac *apiClient, fromObject map[string]any, p
 
 	fromConfig := getValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		fromConfig, err = generateImageConfigToVertex(ac, fromConfig.(map[string]any), toObject)
+		fromConfig, err = generateImagesConfigToVertex(ac, fromConfig.(map[string]any), toObject)
 		if err != nil {
 			return nil, err
 		}
@@ -2109,7 +2109,7 @@ func generatedImageFromVertex(ac *apiClient, fromObject map[string]any, parentOb
 	return toObject, nil
 }
 
-func generateImageResponseFromMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+func generateImagesResponseFromMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromGeneratedImages := getValueByPath(fromObject, []string{"predictions"})
@@ -2125,7 +2125,7 @@ func generateImageResponseFromMldev(ac *apiClient, fromObject map[string]any, pa
 	return toObject, nil
 }
 
-func generateImageResponseFromVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
+func generateImagesResponseFromVertex(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromGeneratedImages := getValueByPath(fromObject, []string{"predictions"})
@@ -2312,22 +2312,22 @@ func (m Models) generateContentStream(ctx context.Context, model string, content
 	})
 }
 
-func (m Models) GenerateImage(ctx context.Context, model string, prompt string, config *GenerateImageConfig) (*GenerateImageResponse, error) {
+func (m Models) GenerateImages(ctx context.Context, model string, prompt string, config *GenerateImagesConfig) (*GenerateImagesResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"model": model, "prompt": prompt, "config": config}
 	deepMarshal(kwargs, &parameterMap)
 
-	var response = new(GenerateImageResponse)
+	var response = new(GenerateImagesResponse)
 	var responseMap map[string]any
 	var fromConverter func(*apiClient, map[string]any, map[string]any) (map[string]any, error)
 	var toConverter func(*apiClient, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.clientConfig.Backend == BackendVertexAI {
-		toConverter = generateImageParametersToVertex
-		fromConverter = generateImageResponseFromVertex
+		toConverter = generateImagesParametersToVertex
+		fromConverter = generateImagesResponseFromVertex
 	} else {
-		toConverter = generateImageParametersToMldev
-		fromConverter = generateImageResponseFromMldev
+		toConverter = generateImagesParametersToMldev
+		fromConverter = generateImagesResponseFromMldev
 	}
 
 	body, err := toConverter(m.apiClient, parameterMap, nil)

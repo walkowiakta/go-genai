@@ -1129,7 +1129,7 @@ func (r *GenerateContentResponse) FunctionCalls() []*FunctionCall {
 // details at
 // VertexAI: https://cloud.google.com/vertex-ai/generative-ai/docs/model-reference/imagen-api.
 // GeminiAPI: https://ai.google.dev/gemini-api/docs/imagen#imagen-model
-type GenerateImageConfig struct {
+type GenerateImagesConfig struct {
 	// Cloud Storage URI used to store the generated images.
 	OutputGCSURI string `json:"outputGcsUri,omitempty"`
 	// Description of what to discourage in the generated images.
@@ -1159,21 +1159,21 @@ type GenerateImageConfig struct {
 	// Compression quality of the generated image (for ``image/jpeg``
 	// only).
 	OutputCompressionQuality *int64 `json:"outputCompressionQuality,omitempty"`
-	// Whether to add a watermark to the generated image.
+	// Whether to add a watermark to the generated images.
 	AddWatermark bool `json:"addWatermark,omitempty"`
-	// Aspect ratio of the generated image.
+	// Aspect ratio of the generated images.
 	AspectRatio string `json:"aspectRatio,omitempty"`
 }
 
-// Class that represents the parameters for generating an image.
-type GenerateImageParameters struct {
+// Class that represents the parameters for generating images.
+type GenerateImagesParameters struct {
 	// ID of the model to use. For a list of models, see `Google models
 	// <https://cloud.google.com/vertex-ai/generative-ai/docs/learn/models>`_.
 	Model string `json:"model,omitempty"`
-	// Text prompt that typically describes the image to output.
+	// Text prompt that typically describes the images to output.
 	Prompt string `json:"prompt,omitempty"`
-	// Configuration for generating an image.
-	Config *GenerateImageConfig `json:"config,omitempty"`
+	// Configuration for generating images.
+	Config *GenerateImagesConfig `json:"config,omitempty"`
 }
 
 // Class that represents an image.
@@ -1195,8 +1195,8 @@ type GeneratedImage struct {
 	RAIFilteredReason string `json:"raiFilteredReason,omitempty"`
 }
 
-// Class that represents the output image response.
-type GenerateImageResponse struct {
+// Class that represents the output images response.
+type GenerateImagesResponse struct {
 	// List of generated images.
 	GeneratedImages []*GeneratedImage `json:"generatedImages,omitempty"`
 }
