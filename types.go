@@ -1688,8 +1688,7 @@ type LiveServerContent struct {
 	TurnComplete bool `json:"turnComplete,omitempty"`
 	// If true, indicates that a client message has interrupted current model generation.
 	// If the client is playing out the content in realtime, this is a good signal to stop
-	// and empty the current queue. If the client is playing out the content in realtime,
-	// this is a good signal to stop and empty the current playback queue.
+	// and empty the current queue.
 	Interrupted bool `json:"interrupted,omitempty"`
 }
 
