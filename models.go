@@ -26,7 +26,7 @@ import (
 func partToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 	if getValueByPath(fromObject, []string{"videoMetadata"}) != nil {
-		return nil, fmt.Errorf("video_metadata parameter is not supported in Google AI")
+		return nil, fmt.Errorf("video_metadata parameter is not supported in Gemini API")
 	}
 
 	fromThought := getValueByPath(fromObject, []string{"thought"})
@@ -168,63 +168,63 @@ func contentToVertex(ac *apiClient, fromObject map[string]any, parentObject map[
 func schemaToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 	if getValueByPath(fromObject, []string{"minItems"}) != nil {
-		return nil, fmt.Errorf("min_items parameter is not supported in Google AI")
+		return nil, fmt.Errorf("min_items parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"example"}) != nil {
-		return nil, fmt.Errorf("example parameter is not supported in Google AI")
+		return nil, fmt.Errorf("example parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"propertyOrdering"}) != nil {
-		return nil, fmt.Errorf("property_ordering parameter is not supported in Google AI")
+		return nil, fmt.Errorf("property_ordering parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"pattern"}) != nil {
-		return nil, fmt.Errorf("pattern parameter is not supported in Google AI")
+		return nil, fmt.Errorf("pattern parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"minimum"}) != nil {
-		return nil, fmt.Errorf("minimum parameter is not supported in Google AI")
+		return nil, fmt.Errorf("minimum parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"default"}) != nil {
-		return nil, fmt.Errorf("default parameter is not supported in Google AI")
+		return nil, fmt.Errorf("default parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"anyOf"}) != nil {
-		return nil, fmt.Errorf("any_of parameter is not supported in Google AI")
+		return nil, fmt.Errorf("any_of parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"maxLength"}) != nil {
-		return nil, fmt.Errorf("max_length parameter is not supported in Google AI")
+		return nil, fmt.Errorf("max_length parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"title"}) != nil {
-		return nil, fmt.Errorf("title parameter is not supported in Google AI")
+		return nil, fmt.Errorf("title parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"minLength"}) != nil {
-		return nil, fmt.Errorf("min_length parameter is not supported in Google AI")
+		return nil, fmt.Errorf("min_length parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"minProperties"}) != nil {
-		return nil, fmt.Errorf("min_properties parameter is not supported in Google AI")
+		return nil, fmt.Errorf("min_properties parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"maxItems"}) != nil {
-		return nil, fmt.Errorf("max_items parameter is not supported in Google AI")
+		return nil, fmt.Errorf("max_items parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"maximum"}) != nil {
-		return nil, fmt.Errorf("maximum parameter is not supported in Google AI")
+		return nil, fmt.Errorf("maximum parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"nullable"}) != nil {
-		return nil, fmt.Errorf("nullable parameter is not supported in Google AI")
+		return nil, fmt.Errorf("nullable parameter is not supported in Gemini API")
 	}
 
 	if getValueByPath(fromObject, []string{"maxProperties"}) != nil {
-		return nil, fmt.Errorf("max_properties parameter is not supported in Google AI")
+		return nil, fmt.Errorf("max_properties parameter is not supported in Gemini API")
 	}
 
 	fromType := getValueByPath(fromObject, []string{"type"})
@@ -384,7 +384,7 @@ func schemaToVertex(ac *apiClient, fromObject map[string]any, parentObject map[s
 func safetySettingToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 	if getValueByPath(fromObject, []string{"method"}) != nil {
-		return nil, fmt.Errorf("method parameter is not supported in Google AI")
+		return nil, fmt.Errorf("method parameter is not supported in Gemini API")
 	}
 
 	fromCategory := getValueByPath(fromObject, []string{"category"})
@@ -424,7 +424,7 @@ func safetySettingToVertex(ac *apiClient, fromObject map[string]any, parentObjec
 func functionDeclarationToMldev(ac *apiClient, fromObject map[string]any, parentObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 	if getValueByPath(fromObject, []string{"response"}) != nil {
-		return nil, fmt.Errorf("response parameter is not supported in Google AI")
+		return nil, fmt.Errorf("response parameter is not supported in Gemini API")
 	}
 
 	fromDescription := getValueByPath(fromObject, []string{"description"})
@@ -566,7 +566,7 @@ func toolToMldev(ac *apiClient, fromObject map[string]any, parentObject map[stri
 	}
 
 	if getValueByPath(fromObject, []string{"retrieval"}) != nil {
-		return nil, fmt.Errorf("retrieval parameter is not supported in Google AI")
+		return nil, fmt.Errorf("retrieval parameter is not supported in Gemini API")
 	}
 
 	fromGoogleSearch := getValueByPath(fromObject, []string{"googleSearch"})
@@ -909,7 +909,7 @@ func generateContentConfigToMldev(ac *apiClient, fromObject map[string]any, pare
 	}
 
 	if getValueByPath(fromObject, []string{"routingConfig"}) != nil {
-		return nil, fmt.Errorf("routing_config parameter is not supported in Google AI")
+		return nil, fmt.Errorf("routing_config parameter is not supported in Gemini API")
 	}
 
 	fromSafetySettings := getValueByPath(fromObject, []string{"safetySettings"})
@@ -965,7 +965,7 @@ func generateContentConfigToMldev(ac *apiClient, fromObject map[string]any, pare
 	}
 
 	if getValueByPath(fromObject, []string{"mediaResolution"}) != nil {
-		return nil, fmt.Errorf("media_resolution parameter is not supported in Google AI")
+		return nil, fmt.Errorf("media_resolution parameter is not supported in Gemini API")
 	}
 
 	fromSpeechConfig := getValueByPath(fromObject, []string{"speechConfig"})
@@ -984,7 +984,7 @@ func generateContentConfigToMldev(ac *apiClient, fromObject map[string]any, pare
 	}
 
 	if getValueByPath(fromObject, []string{"audioTimestamp"}) != nil {
-		return nil, fmt.Errorf("audio_timestamp parameter is not supported in Google AI")
+		return nil, fmt.Errorf("audio_timestamp parameter is not supported in Gemini API")
 	}
 
 	fromThinkingConfig := getValueByPath(fromObject, []string{"thinkingConfig"})
@@ -1274,7 +1274,7 @@ func generateImagesConfigToMldev(ac *apiClient, fromObject map[string]any, paren
 	toObject = make(map[string]any)
 
 	if getValueByPath(fromObject, []string{"outputGcsUri"}) != nil {
-		return nil, fmt.Errorf("output_gcs_uri parameter is not supported in Google AI")
+		return nil, fmt.Errorf("output_gcs_uri parameter is not supported in Gemini API")
 	}
 
 	fromNegativePrompt := getValueByPath(fromObject, []string{"negativePrompt"})
@@ -1293,7 +1293,7 @@ func generateImagesConfigToMldev(ac *apiClient, fromObject map[string]any, paren
 	}
 
 	if getValueByPath(fromObject, []string{"seed"}) != nil {
-		return nil, fmt.Errorf("seed parameter is not supported in Google AI")
+		return nil, fmt.Errorf("seed parameter is not supported in Gemini API")
 	}
 
 	fromSafetyFilterLevel := getValueByPath(fromObject, []string{"safetyFilterLevel"})
@@ -1332,7 +1332,7 @@ func generateImagesConfigToMldev(ac *apiClient, fromObject map[string]any, paren
 	}
 
 	if getValueByPath(fromObject, []string{"addWatermark"}) != nil {
-		return nil, fmt.Errorf("add_watermark parameter is not supported in Google AI")
+		return nil, fmt.Errorf("add_watermark parameter is not supported in Gemini API")
 	}
 
 	fromAspectRatio := getValueByPath(fromObject, []string{"aspectRatio"})
@@ -1510,7 +1510,7 @@ func countTokensConfigToMldev(ac *apiClient, fromObject map[string]any, parentOb
 	}
 
 	if getValueByPath(fromObject, []string{"generationConfig"}) != nil {
-		return nil, fmt.Errorf("generation_config parameter is not supported in Google AI")
+		return nil, fmt.Errorf("generation_config parameter is not supported in Gemini API")
 	}
 
 	return toObject, nil
@@ -1648,7 +1648,7 @@ func computeTokensParametersToMldev(ac *apiClient, fromObject map[string]any, pa
 	}
 
 	if getValueByPath(fromObject, []string{"contents"}) != nil {
-		return nil, fmt.Errorf("contents parameter is not supported in Google AI")
+		return nil, fmt.Errorf("contents parameter is not supported in Gemini API")
 	}
 
 	fromConfig := getValueByPath(fromObject, []string{"config"})
