@@ -1730,6 +1730,14 @@ type LiveClientSetup struct {
 	// use.
 	Model string `json:"model,omitempty"`
 	// The generation configuration for the session.
+	// The following fields are supported:
+	//   - `response_logprobs`
+	//   - `response_mime_type`
+	//   - `logprobs`
+	//   - `response_schema`
+	//   - `stop_sequence`
+	//   - `routing_config`
+	//   - `audio_timestamp`
 	GenerationConfig *GenerationConfig `json:"generationConfig,omitempty"`
 	// The user provided system instructions for the model.
 	// Note: only text should be used in parts and content in each part will be
@@ -1760,16 +1768,16 @@ type LiveClientContent struct {
 
 // User input that is sent in real time.
 // This is different from `ClientContentUpdate` in a few ways:
-// - Can be sent continuously without interruption the model generation.
-// - If there is a need to mix data interleaved across the
-// `ClientContentUpdate` and the `RealtimeUpdate`, server will attempt to
-// optimize for best response, but there are no guarantees.
-// - End of turn is not explicitly specified, but is rather derived from user
-// activity, e.g. end of speech.
-// - Even before the end of turn, the data will be processed incrementally
-// to optimize for a fast start of the response from the model.
-// - Is always assumed to be the user's input (cannot be used to populate
-// conversation history).
+//   - Can be sent continuously without interruption to model generation.
+//   - If there is a need to mix data interleaved across the
+//     `ClientContentUpdate` and the `RealtimeUpdate`, server attempts to
+//     optimize for best response, but there are no guarantees.
+//   - End of turn is not explicitly specified, but is rather derived from user
+//     activity (for example, end of speech).
+//   - Even before the end of turn, the data is processed incrementally
+//     to optimize for a fast start of the response from the model.
+//   - Is always assumed to be the user's input (cannot be used to populate
+//     conversation history).
 type LiveClientRealtimeInput struct {
 	// Inlined bytes data for media input.
 	MediaChunks []*Blob `json:"mediaChunks,omitempty"`
