@@ -200,7 +200,7 @@ const (
 	BlockedReasonProhibitedContent BlockedReason = "PROHIBITED_CONTENT"
 )
 
-// Config class for the dynamic retrieval config mode.
+// Config for the dynamic retrieval config mode.
 type DynamicRetrievalConfigMode string
 
 const (
@@ -210,7 +210,7 @@ const (
 	DynamicRetrievalConfigModeDynamic DynamicRetrievalConfigMode = "MODE_DYNAMIC"
 )
 
-// Config class for the function calling config mode.
+// Config for the function calling config mode.
 type FunctionCallingConfigMode string
 
 const (
@@ -303,7 +303,7 @@ const (
 	SubjectReferenceTypeSubjectTypeProduct SubjectReferenceType = "SUBJECT_TYPE_PRODUCT"
 )
 
-// Config class for the server content modalities.
+// Server content modalities.
 type Modality string
 
 const (
@@ -834,7 +834,7 @@ type GenerateContentConfig struct {
 	ThinkingConfig *ThinkingConfig `json:"thinkingConfig,omitempty"`
 }
 
-// Class for configuring the content of the request to the model.
+// Config for models.generate_content parameters.
 type GenerateContentParameters struct {
 	// ID of the model to use. For a list of models, see `Google models
 	// <https://cloud.google.com/vertex-ai/generative-ai/docs/learn/models>`_.
@@ -861,7 +861,7 @@ type Citation struct {
 	URI string `json:"uri,omitempty"`
 }
 
-// Class for citation information when the model quotes another source.
+// Citation information when the model quotes another source.
 type CitationMetadata struct {
 	// Contains citation information when the model directly quotes, at
 	// length, from another source. Can include traditional websites and code
@@ -1000,7 +1000,7 @@ type SafetyRating struct {
 	SeverityScore *float64 `json:"severityScore,omitempty"`
 }
 
-// Class containing a response candidate generated from the model.
+// A response candidate generated from the model.
 type Candidate struct {
 	// Contains the multi-part content of the response.
 	Content *Content `json:"content,omitempty"`
@@ -1179,7 +1179,7 @@ type GenerateImagesConfig struct {
 	EnhancePrompt bool `json:"enhancePrompt,omitempty"`
 }
 
-// Class that represents the parameters for generating images.
+// The parameters for generating images.
 type GenerateImagesParameters struct {
 	// ID of the model to use. For a list of models, see `Google models
 	// <https://cloud.google.com/vertex-ai/generative-ai/docs/learn/models>`_.
@@ -1190,7 +1190,7 @@ type GenerateImagesParameters struct {
 	Config *GenerateImagesConfig `json:"config,omitempty"`
 }
 
-// Class that represents an image.
+// An image.
 type Image struct {
 	// The Cloud Storage URI of the image. ``Image`` can contain a value
 	// for this field or the ``image_bytes`` field but not both.
@@ -1202,7 +1202,7 @@ type Image struct {
 	MIMEType string `json:"mimeType,omitempty"`
 }
 
-// Class that represents an output image.
+// An output image.
 type GeneratedImage struct {
 	// The output image data.
 	Image *Image `json:"image,omitempty"`
@@ -1211,7 +1211,7 @@ type GeneratedImage struct {
 	RAIFilteredReason string `json:"raiFilteredReason,omitempty"`
 }
 
-// Class that represents the output images response.
+// The output images response.
 type GenerateImagesResponse struct {
 	// List of generated images.
 	GeneratedImages []*GeneratedImage `json:"generatedImages,omitempty"`
@@ -1349,7 +1349,7 @@ type ComputeTokensResponse struct {
 	TokensInfo []*TokensInfo `json:"tokensInfo,omitempty"`
 }
 
-// Class for configuring optional cached content creation parameters.
+// Optional configuration for cached content creation.
 type CreateCachedContentConfig struct {
 	// The TTL for this resource. The expiration time is computed: now + TTL.
 	TTL string `json:"ttl,omitempty"`
@@ -1558,7 +1558,7 @@ type UpscaleImageParameters struct {
 	Config *UpscaleImageConfig `json:"config,omitempty"`
 }
 
-// Class that represents a Raw reference image.
+// A raw reference image.
 // A raw reference image represents the base image to edit, provided by the user.
 // It can optionally be provided in addition to a mask reference image or
 // a style reference image.
@@ -1633,7 +1633,7 @@ type StyleReferenceConfig struct {
 	StyleDescription string `json:"styleDescription,omitempty"`
 }
 
-// Class that represents a Style reference image.
+// A style reference image.
 // This encapsulates a style reference image provided by the user, and
 // additionally optional config parameters for the style reference image.
 // A raw reference image can also be provided as a destination for the style to
@@ -1657,7 +1657,7 @@ type SubjectReferenceConfig struct {
 	SubjectDescription string `json:"subjectDescription,omitempty"`
 }
 
-// Class that represents a Subject reference image.
+// A subject reference image.
 // This encapsulates a subject reference image provided by the user, and
 // additionally optional config parameters for the subject reference image.
 // A raw reference image can also be provided as a destination for the subject to
@@ -1759,7 +1759,7 @@ type LiveClientSetup struct {
 type LiveClientContent struct {
 	// The content appended to the current conversation with the model.
 	// For single-turn queries, this is a single instance. For multi-turn
-	// queries, this is a repeated field that contains conversation history +
+	// queries, this is a repeated field that contains conversation history and
 	// latest request.
 	Turns []*Content `json:"turns,omitempty"`
 	// If true, indicates that the server content generation should start with
@@ -1810,7 +1810,7 @@ type LiveClientMessage struct {
 	ToolResponse *LiveClientToolResponse `json:"toolResponse,omitempty"`
 }
 
-// Config class for the session.
+// Session config for the API connection.
 type LiveConnectConfig struct {
 	// The generation configuration for the session.
 	GenerationConfig *GenerationConfig `json:"generationConfig,omitempty"`
