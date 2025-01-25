@@ -1175,6 +1175,8 @@ type GenerateImagesConfig struct {
 	AddWatermark bool `json:"addWatermark,omitempty"`
 	// Aspect ratio of the generated images.
 	AspectRatio string `json:"aspectRatio,omitempty"`
+	// Whether to use the prompt rewriting logic.
+	EnhancePrompt bool `json:"enhancePrompt,omitempty"`
 }
 
 // Class that represents the parameters for generating images.

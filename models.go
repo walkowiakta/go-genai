@@ -1340,6 +1340,11 @@ func generateImagesConfigToMldev(ac *apiClient, fromObject map[string]any, paren
 		setValueByPath(parentObject, []string{"parameters", "aspectRatio"}, fromAspectRatio)
 	}
 
+	fromEnhancePrompt := getValueByPath(fromObject, []string{"enhancePrompt"})
+	if fromEnhancePrompt != nil {
+		setValueByPath(parentObject, []string{"parameters", "enhancePrompt"}, fromEnhancePrompt)
+	}
+
 	return toObject, nil
 }
 
@@ -1414,6 +1419,11 @@ func generateImagesConfigToVertex(ac *apiClient, fromObject map[string]any, pare
 	fromAspectRatio := getValueByPath(fromObject, []string{"aspectRatio"})
 	if fromAspectRatio != nil {
 		setValueByPath(parentObject, []string{"parameters", "aspectRatio"}, fromAspectRatio)
+	}
+
+	fromEnhancePrompt := getValueByPath(fromObject, []string{"enhancePrompt"})
+	if fromEnhancePrompt != nil {
+		setValueByPath(parentObject, []string{"parameters", "enhancePrompt"}, fromEnhancePrompt)
 	}
 
 	return toObject, nil
