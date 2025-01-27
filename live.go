@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// Live client. The live module is experimental.
+
 package genai
 
 import (
@@ -25,6 +27,7 @@ import (
 
 // Live can be used to create a realtime connection to the API.
 // It is initiated when creating a client. You don't need to create a new Live object.
+// The live module is experimental.
 //
 //	client, _ := genai.NewClient(ctx, &genai.ClientConfig{})
 //	session, _ := client.Live.Connect(model, &genai.LiveConnectConfig{}).
@@ -33,6 +36,7 @@ type Live struct {
 }
 
 // Session is a realtime connection to the API.
+// The live module is experimental.
 type Session struct {
 	conn      *websocket.Conn
 	apiClient *apiClient
@@ -40,6 +44,7 @@ type Session struct {
 
 // Connect establishes a realtime connection to the specified model with given configuration.
 // It returns a Session object representing the connection or an error if the connection fails.
+// The live module is experimental.
 func (r *Live) Connect(model string, config *LiveConnectConfig) (*Session, error) {
 	baseURL, err := url.Parse(r.apiClient.clientConfig.HTTPOptions.BaseURL)
 	if err != nil {
@@ -122,6 +127,7 @@ func (r *Live) Connect(model string, config *LiveConnectConfig) (*Session, error
 
 // Send transmits a LiveClientMessage over the established connection.
 // It returns an error if sending the message fails.
+// The live module is experimental.
 func (s *Session) Send(input *LiveClientMessage) error {
 	if input.Setup != nil {
 		return fmt.Errorf("message SetUp is not supported in Send(). Use Connect() instead")
@@ -152,6 +158,7 @@ func (s *Session) Send(input *LiveClientMessage) error {
 
 // Receive reads a LiveServerMessage from the connection.
 // It returns the received message or an error if reading or unmarshalling fails.
+// The live module is experimental.
 func (s *Session) Receive() (*LiveServerMessage, error) {
 	messageType, msgBytes, err := s.conn.ReadMessage()
 	if err != nil {
@@ -186,6 +193,7 @@ func (s *Session) Receive() (*LiveServerMessage, error) {
 }
 
 // Close terminates the connection.
+// The live module is experimental.
 func (s *Session) Close() {
 	s.conn.Close()
 }
