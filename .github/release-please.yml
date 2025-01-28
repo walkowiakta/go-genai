@@ -1,6 +1,7 @@
 handleGHRelease: true
 manifest: true
 releaseType: go
+bumpMinorPreMajor: true
 
 branches:
   - branch: main
