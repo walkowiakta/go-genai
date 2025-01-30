@@ -2115,6 +2115,11 @@ func generatedImageFromMldev(ac *apiClient, fromObject map[string]any, parentObj
 		setValueByPath(toObject, []string{"raiFilteredReason"}, fromRaiFilteredReason)
 	}
 
+	fromEnhancedPrompt := getValueByPath(fromObject, []string{"prompt"})
+	if fromEnhancedPrompt != nil {
+		setValueByPath(toObject, []string{"enhancedPrompt"}, fromEnhancedPrompt)
+	}
+
 	return toObject, nil
 }
 
@@ -2134,6 +2139,11 @@ func generatedImageFromVertex(ac *apiClient, fromObject map[string]any, parentOb
 	fromRaiFilteredReason := getValueByPath(fromObject, []string{"raiFilteredReason"})
 	if fromRaiFilteredReason != nil {
 		setValueByPath(toObject, []string{"raiFilteredReason"}, fromRaiFilteredReason)
+	}
+
+	fromEnhancedPrompt := getValueByPath(fromObject, []string{"prompt"})
+	if fromEnhancedPrompt != nil {
+		setValueByPath(toObject, []string{"enhancedPrompt"}, fromEnhancedPrompt)
 	}
 
 	return toObject, nil

@@ -1209,6 +1209,9 @@ type GeneratedImage struct {
 	// Responsible AI filter reason if the image is filtered out of the
 	// response.
 	RAIFilteredReason string `json:"raiFilteredReason,omitempty"`
+	// The rewritten prompt used for the image generation if the prompt
+	// enhancer is enabled.
+	EnhancedPrompt string `json:"enhancedPrompt,omitempty"`
 }
 
 // The output images response.
