@@ -817,6 +817,8 @@ type GenerateContentConfig struct {
 	Tools []*Tool `json:"tools,omitempty"`
 	// Associates model output to a specific function call.
 	ToolConfig *ToolConfig `json:"toolConfig,omitempty"`
+	// Labels with user-defined metadata to break down billed charges.
+	Labels map[string]string `json:"labels,omitempty"`
 	// Resource name of a context cache that can be used in subsequent
 	// requests.
 	CachedContent string `json:"cachedContent,omitempty"`

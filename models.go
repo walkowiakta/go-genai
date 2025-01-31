@@ -949,6 +949,10 @@ func generateContentConfigToMldev(ac *apiClient, fromObject map[string]any, pare
 		setValueByPath(parentObject, []string{"toolConfig"}, fromToolConfig)
 	}
 
+	if getValueByPath(fromObject, []string{"labels"}) != nil {
+		return nil, fmt.Errorf("labels parameter is not supported in Gemini API")
+	}
+
 	fromCachedContent := getValueByPath(fromObject, []string{"cachedContent"})
 	if fromCachedContent != nil {
 		fromCachedContent, err = tCachedContentName(ac, fromCachedContent)
@@ -1133,6 +1137,11 @@ func generateContentConfigToVertex(ac *apiClient, fromObject map[string]any, par
 		}
 
 		setValueByPath(parentObject, []string{"toolConfig"}, fromToolConfig)
+	}
+
+	fromLabels := getValueByPath(fromObject, []string{"labels"})
+	if fromLabels != nil {
+		setValueByPath(parentObject, []string{"labels"}, fromLabels)
 	}
 
 	fromCachedContent := getValueByPath(fromObject, []string{"cachedContent"})
